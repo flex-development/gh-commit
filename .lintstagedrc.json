@@ -1,0 +1,13 @@
+{
+  "*": ["dprint check", "cspell lint --color --no-progress --relative $@"],
+  "**/*.{cjs,cts,gql,js,json,json5,jsonc,jsx,md,mjs,mts,ts,tsx,yaml,yml}": [
+    "eslint --exit-on-fatal-error"
+  ],
+  "**/*.{cts,mts,ts}": "vitest typecheck --changed --run",
+  "**/yarn.lock": "yarn dedupe --check",
+  "src/**/*.ts": [
+    "vitest --changed --coverage --run",
+    "yarn build",
+    "bash -c tsc -p tsconfig.build.json"
+  ]
+}

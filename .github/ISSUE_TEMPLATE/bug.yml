@@ -1,0 +1,85 @@
+name: Bug report
+description: Something isn't working
+title: 🐛 <title>
+labels:
+  - status:needs-triage
+  - type:fix
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting the issue you are facing.
+        Complete the form below to ensure the necessary details are captured to assist you.
+  - id: prerequisites
+    type: checkboxes
+    attributes:
+      label: Prerequisites
+      options:
+        - label: read documentation
+          required: true
+        - label: searched open issues for existing bug report
+          required: true
+        - label: searched closed issues for solution(s) or feedback
+          required: true
+  - id: current-behavior
+    type: textarea
+    attributes:
+      label: Current behavior
+      description: A concise description of what you're experiencing
+    validations:
+      required: true
+  - id: repro
+    type: textarea
+    attributes:
+      label: Reproduction
+      description: |
+        [Minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example)
+    validations:
+      required: true
+  - id: expected-behavior
+    type: textarea
+    attributes:
+      label: Expected behavior
+      description: A concise description of what you expected to happen
+    validations:
+      required: true
+  - id: version
+    type: input
+    attributes:
+      label: Action version
+      description: Version of action being used
+    validations:
+      required: true
+  - id: runner
+    type: dropdown
+    attributes:
+      label: Action runner
+      description: |
+        [Runner](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on) being used
+      options:
+        - macos-11
+        - macos-12
+        - macos-12-large
+        - macos-13
+        - macos-13-large
+        - macos-13-xlarge
+        - macos-latest
+        - macos-latest-large
+        - macos-latest-xlarge
+        - other
+        - ubuntu-20.04
+        - ubuntu-22.04
+        - ubuntu-latest
+        - windows-2019
+        - windows-2022
+        - windows-latest
+    validations:
+      required: true
+  - id: additional-context
+    type: textarea
+    attributes:
+      label: Additional context
+      description: |
+        Add any other details about the problem here. Include links as necessary (e.g. relevant docs, issues, pull requests, etc)
+    validations:
+      required: false
