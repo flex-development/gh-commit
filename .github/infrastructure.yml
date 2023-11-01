@@ -163,7 +163,7 @@ repository:
   automated_security_fixes: true
   default_branch: main
   delete_branch_on_merge: true
-  description: Create commits with the GitHub REST API
+  description: Create commits with the GitHub API
   has_issues: true
   has_projects: true
   has_wiki: false
@@ -181,6 +181,7 @@ repository:
     - commit
     - commit-action
     - github-api
+    - graphql
     - typescript
   visibility: public
   vulnerability_alerts: true

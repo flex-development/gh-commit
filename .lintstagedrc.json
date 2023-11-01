@@ -5,9 +5,5 @@
   ],
   "**/*.{cts,mts,ts}": "vitest typecheck --changed --run",
   "**/yarn.lock": "yarn dedupe --check",
-  "src/**/*.ts": [
-    "vitest --changed --coverage --run",
-    "yarn build",
-    "bash -c tsc -p tsconfig.build.json"
-  ]
+  "src/**/*.ts": "vitest --changed --coverage --run"
 }

@@ -18,6 +18,13 @@ const config: Config = defineBuildConfig({
   charset: 'utf8',
   conditions: tsconfig.compilerOptions.customConditions,
   dts: false,
+  external: [
+    '@nestjs/microservices',
+    '@nestjs/platform-express',
+    '@nestjs/websockets',
+    'class-transformer',
+    'class-validator'
+  ],
   platform: 'node',
   source: 'src/main.ts',
   sourcemap: true,

@@ -77,6 +77,7 @@ ignore:
   - '**/__mocks__/**'
   - '**/__tests__/**'
   - '**/index.ts'
+  - '**/types/'
   - src/main.ts
 
 profiling:

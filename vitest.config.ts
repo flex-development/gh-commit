@@ -4,9 +4,12 @@
  * @see https://vitest.dev/config/
  */
 
+import { DECORATOR_REGEX } from '@flex-development/decorator-regex'
 import pathe from '@flex-development/pathe'
-import { ifelse, sift } from '@flex-development/tutils'
+import * as tscu from '@flex-development/tsconfig-utils'
+import { ifelse, sift, split, type Nullable } from '@flex-development/tutils'
 import ci from 'is-ci'
+import ts from 'typescript'
 import tsconfigpaths from 'vite-tsconfig-paths'
 import {
   defineConfig,
@@ -14,6 +17,7 @@ import {
   type UserConfigExport
 } from 'vitest/config'
 import { BaseSequencer, type WorkspaceSpec } from 'vitest/node'
+import tsconfig from './tsconfig.json' assert { type: 'json' }
 
 /**
  * Vitest configuration export.
@@ -32,7 +36,58 @@ const config: UserConfigExport = defineConfig((): UserConfig => {
 
   return {
     define: {},
-    plugins: [tsconfigpaths({ projects: [pathe.resolve('tsconfig.json')] })],
+    plugins: [
+      {
+        enforce: 'pre',
+        name: 'decorators',
+
+        /**
+         * Transforms source `code` containing decorators.
+         *
+         * @param {string} code - Source code
+         * @param {string} id - Module id of source code
+         * @return {Nullable<{ code: string }>} Transform result
+         */
+        transform(code: string, id: string): Nullable<{ code: string }> {
+          // do nothing if source code does not contain decorators
+          DECORATOR_REGEX.lastIndex = 0
+          if (!DECORATOR_REGEX.test(code)) return null
+
+          /**
+           * Regular expression used to match constructor parameters.
+           *
+           * @see https://regex101.com/r/kTq0JK
+           *
+           * @const {RegExp} CONSTRUCTOR_PARAMS_REGEX
+           */
+          const CONSTRUCTOR_PARAMS_REGEX: RegExp =
+            /(?<=constructor\(\s*)([^\n)].+?)(?=\n? *?\) ?{)/gs
+
+          // add ignore comment before constructor parameters
+          for (const [match] of code.matchAll(CONSTRUCTOR_PARAMS_REGEX)) {
+            code = code.replace(match, (params: string): string => {
+              return split(params, '\n').reduce((acc, param) => {
+                return acc.replace(
+                  param,
+                  param.replace(/(\S)/, '/* c8 ignore next */ $1')
+                )
+              }, params)
+            })
+          }
+
+          return {
+            code: ts.transpileModule(code, {
+              compilerOptions: tscu.normalizeCompilerOptions({
+                ...tsconfig.compilerOptions,
+                inlineSourceMap: true
+              }),
+              fileName: id
+            }).outputText
+          }
+        }
+      },
+      tsconfigpaths({ projects: [pathe.resolve('tsconfig.json')] })
+    ],
     test: {
       allowOnly: !ci,
       benchmark: {},
@@ -50,6 +105,7 @@ const config: UserConfigExport = defineConfig((): UserConfig => {
           '**/__mocks__/**',
           '**/__tests__/**',
           '**/index.ts',
+          '**/types/',
           'src/main.ts'
         ],
         extension: ['.ts'],

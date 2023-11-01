@@ -38,6 +38,10 @@ updates:
       flex-development:
         patterns:
           - '@flex-development/*'
+      nestjs:
+        patterns:
+          - '@nestjs/*'
+          - rxjs
       typescript-eslint:
         patterns:
           - '@typescript-eslint/*'
