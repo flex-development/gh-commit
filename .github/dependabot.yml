@@ -42,6 +42,9 @@ updates:
         patterns:
           - '@nestjs/*'
           - rxjs
+      octokit:
+        patterns:
+          - '@octokit/*'
       typescript-eslint:
         patterns:
           - '@typescript-eslint/*'

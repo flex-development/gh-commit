@@ -27,15 +27,14 @@ class BranchQueryHandler
   /**
    * GraphQL query.
    *
-   * @see {@linkcode graphql.DocumentNode}
    * @see https://docs.github.com/graphql/reference/objects#repository
    *
    * @protected
    * @readonly
    * @instance
-   * @member {graphql.DocumentNode} operation
+   * @member {string} operation
    */
-  protected readonly operation: graphql.DocumentNode
+  protected readonly operation: string
 
   /**
    * Create a new branch query handler.
@@ -45,7 +44,7 @@ class BranchQueryHandler
    * @param {Octokit} octokit - Hydrated octokit client
    */
   constructor(protected readonly octokit: Octokit) {
-    this.operation = gql`
+    this.operation = graphql.print(gql`
       query ($owner: String!, $ref: String!, $repo: String!) {
         payload: repository(name: $repo, owner: $owner) {
           ref(qualifiedName: $ref) {
@@ -55,7 +54,7 @@ class BranchQueryHandler
           }
         }
       }
-    `
+    `)
   }
 
   /**
@@ -74,7 +73,7 @@ class BranchQueryHandler
     // fetch branch reference from repository
     const { payload } = await this.octokit.graphql<{ payload: Payload }>({
       owner: query.owner,
-      query: graphql.print(this.operation),
+      query: this.operation,
       ref: query.ref,
       repo: query.repo
     })
