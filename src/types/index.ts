@@ -4,3 +4,4 @@
  */
 
 export type { default as Branch } from './branch'
+export type { default as Changes } from './changes'

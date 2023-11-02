@@ -1,0 +1,52 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`unit:queries/ChangesQueryHandler > execute > should return file changes payload 1`] = `
+{
+  "additions": [
+    {
+      "contents": "fs.readFileSync('src/types/changes.ts', 'base64')",
+      "path": "src/types/changes.ts",
+    },
+    {
+      "contents": "fs.readFileSync('src/types/__tests__/changes.spec-d.ts', 'base64')",
+      "path": "src/types/__tests__/changes.spec-d.ts",
+    },
+    {
+      "contents": "fs.readFileSync('src/queries/changes.handler.ts', 'base64')",
+      "path": "src/queries/changes.handler.ts",
+    },
+    {
+      "contents": "fs.readFileSync('src/queries/__tests__/changes.handler.spec.ts', 'base64')",
+      "path": "src/queries/__tests__/changes.handler.spec.ts",
+    },
+    {
+      "contents": "fs.readFileSync('src/types/index.ts', 'base64')",
+      "path": "src/types/index.ts",
+    },
+    {
+      "contents": "fs.readFileSync('src/queries/index.ts', 'base64')",
+      "path": "src/queries/index.ts",
+    },
+    {
+      "contents": "fs.readFileSync('src/queries/changes.query.ts', 'base64')",
+      "path": "src/queries/changes.query.ts",
+    },
+    {
+      "contents": "fs.readFileSync('src/queries/branch.query.ts', 'base64')",
+      "path": "src/queries/branch.query.ts",
+    },
+    {
+      "contents": "fs.readFileSync('CONTRIBUTING.md', 'base64')",
+      "path": "CONTRIBUTING.md",
+    },
+  ],
+  "deletions": [
+    {
+      "path": "__tests__/setup/serializers/index.ts",
+    },
+    {
+      "path": "__tests__/setup/matchers/index.ts",
+    },
+  ],
+}
+`;
