@@ -32,6 +32,12 @@ branches:
             app_id: 254
           - context: codecov/project
             app_id: 254
+          - context: codecov/project/commands
+            app_id: 254
+          - context: codecov/project/providers
+            app_id: 254
+          - context: codecov/project/queries
+            app_id: 254
           - context: commitlint
           - context: dependabot-dedupe
           - context: format
