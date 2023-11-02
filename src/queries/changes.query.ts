@@ -3,14 +3,18 @@
  * @module commit-action/queries/ChangesQuery
  */
 
-import { get, sift, unique } from '@flex-development/tutils'
+import type { Inputs } from '#src/types'
+import { get, sift, unique, type Pick } from '@flex-development/tutils'
 
 /**
  * File changes query model.
  *
+ * @see {@linkcode Inputs}
+ *
  * @class
+ * @implements {Pick<Inputs, 'files' | 'workspace'>}
  */
-class ChangesQuery {
+class ChangesQuery implements Pick<Inputs, 'files' | 'workspace'> {
   /**
    * Changed file filters.
    *

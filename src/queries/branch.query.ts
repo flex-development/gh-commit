@@ -3,15 +3,19 @@
  * @module commit-action/queries/BranchQuery
  */
 
+import type { Inputs } from '#src/types'
 import { sep } from '@flex-development/pathe'
-import { join } from '@flex-development/tutils'
+import { join, type Pick } from '@flex-development/tutils'
 
 /**
  * Branch query model.
  *
+ * @see {@linkcode Inputs}
+ *
  * @class
+ * @implements {Pick<Inputs, 'owner' | 'ref' | 'repo'>}
  */
-class BranchQuery {
+class BranchQuery implements Pick<Inputs, 'owner' | 'ref' | 'repo'> {
   /**
    * Repository owner.
    *
