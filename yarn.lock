@@ -5941,12 +5941,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loupe@npm:3.0.0":
-  version: 3.0.0
-  resolution: "loupe@npm:3.0.0"
+"loupe@npm:2.3.7":
+  version: 2.3.7
+  resolution: "loupe@npm:2.3.7"
   dependencies:
     get-func-name: "npm:^2.0.1"
-  checksum: 8f2692108e59522df6b374d5e3669ffb298071043beaa14c0c55a2631dda0d4e9e9e24a484b7736cbe85c0c38dcd8d42d70b60ecc81cd1488f87207b7674f28a
+  checksum: 635c8f0914c2ce7ecfe4e239fbaf0ce1d2c00e4246fafcc4ed000bfdb1b8f89d05db1a220054175cca631ebf3894872a26fffba0124477fcb562f78762848fb1
   languageName: node
   linkType: hard
 

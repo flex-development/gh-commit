@@ -135,7 +135,7 @@
   },
   "resolutions": {
     "chai": "5.0.0-alpha.2",
-    "loupe": "3.0.0"
+    "loupe": "2.3.7"
   },
   "engines": {
     "node": ">=20"

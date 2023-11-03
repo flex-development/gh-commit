@@ -22420,6 +22420,564 @@ var require_exceptions = __commonJS({
   }
 });
 
+// node_modules/@nestjs/common/utils/cli-colors.util.js
+var require_cli_colors_util = __commonJS({
+  "node_modules/@nestjs/common/utils/cli-colors.util.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.yellow = exports.clc = void 0;
+    var isColorAllowed = () => !process.env.NO_COLOR;
+    var colorIfAllowed = (colorFn) => (text) => isColorAllowed() ? colorFn(text) : text;
+    exports.clc = {
+      bold: colorIfAllowed((text) => `\x1B[1m${text}\x1B[0m`),
+      green: colorIfAllowed((text) => `\x1B[32m${text}\x1B[39m`),
+      yellow: colorIfAllowed((text) => `\x1B[33m${text}\x1B[39m`),
+      red: colorIfAllowed((text) => `\x1B[31m${text}\x1B[39m`),
+      magentaBright: colorIfAllowed((text) => `\x1B[95m${text}\x1B[39m`),
+      cyanBright: colorIfAllowed((text) => `\x1B[96m${text}\x1B[39m`)
+    };
+    exports.yellow = colorIfAllowed((text) => `\x1B[38;5;3m${text}\x1B[39m`);
+  }
+});
+
+// node_modules/@nestjs/common/services/utils/is-log-level-enabled.util.js
+var require_is_log_level_enabled_util = __commonJS({
+  "node_modules/@nestjs/common/services/utils/is-log-level-enabled.util.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isLogLevelEnabled = void 0;
+    var LOG_LEVEL_VALUES = {
+      verbose: 0,
+      debug: 1,
+      log: 2,
+      warn: 3,
+      error: 4,
+      fatal: 5
+    };
+    function isLogLevelEnabled(targetLevel, logLevels) {
+      if (!logLevels || Array.isArray(logLevels) && logLevels?.length === 0) {
+        return false;
+      }
+      if (logLevels.includes(targetLevel)) {
+        return true;
+      }
+      const highestLogLevelValue = logLevels.map((level) => LOG_LEVEL_VALUES[level]).sort((a, b) => b - a)?.[0];
+      const targetLevelValue = LOG_LEVEL_VALUES[targetLevel];
+      return targetLevelValue >= highestLogLevelValue;
+    }
+    exports.isLogLevelEnabled = isLogLevelEnabled;
+  }
+});
+
+// node_modules/@nestjs/common/services/utils/index.js
+var require_utils3 = __commonJS({
+  "node_modules/@nestjs/common/services/utils/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_modules2(), __toCommonJS(modules_exports2));
+    tslib_1.__exportStar(require_is_log_level_enabled_util(), exports);
+  }
+});
+
+// node_modules/@nestjs/common/services/console-logger.service.js
+var require_console_logger_service = __commonJS({
+  "node_modules/@nestjs/common/services/console-logger.service.js"(exports) {
+    "use strict";
+    var ConsoleLogger_1;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ConsoleLogger = void 0;
+    var tslib_1 = (init_modules2(), __toCommonJS(modules_exports2));
+    var core_1 = require_core2();
+    var cli_colors_util_1 = require_cli_colors_util();
+    var shared_utils_1 = require_shared_utils();
+    var utils_1 = require_utils3();
+    var DEFAULT_LOG_LEVELS = [
+      "log",
+      "error",
+      "warn",
+      "debug",
+      "verbose",
+      "fatal"
+    ];
+    var dateTimeFormatter = new Intl.DateTimeFormat(void 0, {
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      day: "2-digit",
+      month: "2-digit"
+    });
+    var ConsoleLogger = ConsoleLogger_1 = class ConsoleLogger {
+      constructor(context, options = {}) {
+        this.context = context;
+        this.options = options;
+        if (!options.logLevels) {
+          options.logLevels = DEFAULT_LOG_LEVELS;
+        }
+        if (context) {
+          this.originalContext = context;
+        }
+      }
+      log(message, ...optionalParams) {
+        if (!this.isLevelEnabled("log")) {
+          return;
+        }
+        const { messages, context } = this.getContextAndMessagesToPrint([
+          message,
+          ...optionalParams
+        ]);
+        this.printMessages(messages, context, "log");
+      }
+      error(message, ...optionalParams) {
+        if (!this.isLevelEnabled("error")) {
+          return;
+        }
+        const { messages, context, stack } = this.getContextAndStackAndMessagesToPrint([message, ...optionalParams]);
+        this.printMessages(messages, context, "error", "stderr");
+        this.printStackTrace(stack);
+      }
+      warn(message, ...optionalParams) {
+        if (!this.isLevelEnabled("warn")) {
+          return;
+        }
+        const { messages, context } = this.getContextAndMessagesToPrint([
+          message,
+          ...optionalParams
+        ]);
+        this.printMessages(messages, context, "warn");
+      }
+      debug(message, ...optionalParams) {
+        if (!this.isLevelEnabled("debug")) {
+          return;
+        }
+        const { messages, context } = this.getContextAndMessagesToPrint([
+          message,
+          ...optionalParams
+        ]);
+        this.printMessages(messages, context, "debug");
+      }
+      verbose(message, ...optionalParams) {
+        if (!this.isLevelEnabled("verbose")) {
+          return;
+        }
+        const { messages, context } = this.getContextAndMessagesToPrint([
+          message,
+          ...optionalParams
+        ]);
+        this.printMessages(messages, context, "verbose");
+      }
+      fatal(message, ...optionalParams) {
+        if (!this.isLevelEnabled("fatal")) {
+          return;
+        }
+        const { messages, context } = this.getContextAndMessagesToPrint([
+          message,
+          ...optionalParams
+        ]);
+        this.printMessages(messages, context, "fatal");
+      }
+      /**
+       * Set log levels
+       * @param levels log levels
+       */
+      setLogLevels(levels) {
+        if (!this.options) {
+          this.options = {};
+        }
+        this.options.logLevels = levels;
+      }
+      /**
+       * Set logger context
+       * @param context context
+       */
+      setContext(context) {
+        this.context = context;
+      }
+      /**
+       * Resets the logger context to the value that was passed in the constructor.
+       */
+      resetContext() {
+        this.context = this.originalContext;
+      }
+      isLevelEnabled(level) {
+        const logLevels = this.options?.logLevels;
+        return (0, utils_1.isLogLevelEnabled)(level, logLevels);
+      }
+      getTimestamp() {
+        return dateTimeFormatter.format(Date.now());
+      }
+      printMessages(messages, context = "", logLevel = "log", writeStreamType) {
+        messages.forEach((message) => {
+          const pidMessage = this.formatPid(process.pid);
+          const contextMessage = this.formatContext(context);
+          const timestampDiff = this.updateAndGetTimestampDiff();
+          const formattedLogLevel = logLevel.toUpperCase().padStart(7, " ");
+          const formattedMessage = this.formatMessage(logLevel, message, pidMessage, formattedLogLevel, contextMessage, timestampDiff);
+          process[writeStreamType ?? "stdout"].write(formattedMessage);
+        });
+      }
+      formatPid(pid) {
+        return `[Nest] ${pid}  - `;
+      }
+      formatContext(context) {
+        return context ? (0, cli_colors_util_1.yellow)(`[${context}] `) : "";
+      }
+      formatMessage(logLevel, message, pidMessage, formattedLogLevel, contextMessage, timestampDiff) {
+        const output = this.stringifyMessage(message, logLevel);
+        pidMessage = this.colorize(pidMessage, logLevel);
+        formattedLogLevel = this.colorize(formattedLogLevel, logLevel);
+        return `${pidMessage}${this.getTimestamp()} ${formattedLogLevel} ${contextMessage}${output}${timestampDiff}
+`;
+      }
+      stringifyMessage(message, logLevel) {
+        if ((0, shared_utils_1.isFunction)(message)) {
+          const messageAsStr = Function.prototype.toString.call(message);
+          const isClass = messageAsStr.startsWith("class ");
+          if (isClass) {
+            return this.stringifyMessage(message.name, logLevel);
+          }
+          return this.stringifyMessage(message(), logLevel);
+        }
+        return (0, shared_utils_1.isPlainObject)(message) || Array.isArray(message) ? `${this.colorize("Object:", logLevel)}
+${JSON.stringify(message, (key, value) => typeof value === "bigint" ? value.toString() : value, 2)}
+` : this.colorize(message, logLevel);
+      }
+      colorize(message, logLevel) {
+        const color = this.getColorByLogLevel(logLevel);
+        return color(message);
+      }
+      printStackTrace(stack) {
+        if (!stack) {
+          return;
+        }
+        process.stderr.write(`${stack}
+`);
+      }
+      updateAndGetTimestampDiff() {
+        const includeTimestamp = ConsoleLogger_1.lastTimestampAt && this.options?.timestamp;
+        const result = includeTimestamp ? this.formatTimestampDiff(Date.now() - ConsoleLogger_1.lastTimestampAt) : "";
+        ConsoleLogger_1.lastTimestampAt = Date.now();
+        return result;
+      }
+      formatTimestampDiff(timestampDiff) {
+        return (0, cli_colors_util_1.yellow)(` +${timestampDiff}ms`);
+      }
+      getContextAndMessagesToPrint(args) {
+        if (args?.length <= 1) {
+          return { messages: args, context: this.context };
+        }
+        const lastElement = args[args.length - 1];
+        const isContext = (0, shared_utils_1.isString)(lastElement);
+        if (!isContext) {
+          return { messages: args, context: this.context };
+        }
+        return {
+          context: lastElement,
+          messages: args.slice(0, args.length - 1)
+        };
+      }
+      getContextAndStackAndMessagesToPrint(args) {
+        if (args.length === 2) {
+          return this.isStackFormat(args[1]) ? {
+            messages: [args[0]],
+            stack: args[1],
+            context: this.context
+          } : {
+            messages: [args[0]],
+            context: args[1]
+          };
+        }
+        const { messages, context } = this.getContextAndMessagesToPrint(args);
+        if (messages?.length <= 1) {
+          return { messages, context };
+        }
+        const lastElement = messages[messages.length - 1];
+        const isStack = (0, shared_utils_1.isString)(lastElement);
+        if (!isStack && !(0, shared_utils_1.isUndefined)(lastElement)) {
+          return { messages, context };
+        }
+        return {
+          stack: lastElement,
+          messages: messages.slice(0, messages.length - 1),
+          context
+        };
+      }
+      isStackFormat(stack) {
+        if (!(0, shared_utils_1.isString)(stack) && !(0, shared_utils_1.isUndefined)(stack)) {
+          return false;
+        }
+        return /^(.)+\n\s+at .+:\d+:\d+$/.test(stack);
+      }
+      getColorByLogLevel(level) {
+        switch (level) {
+          case "debug":
+            return cli_colors_util_1.clc.magentaBright;
+          case "warn":
+            return cli_colors_util_1.clc.yellow;
+          case "error":
+            return cli_colors_util_1.clc.red;
+          case "verbose":
+            return cli_colors_util_1.clc.cyanBright;
+          case "fatal":
+            return cli_colors_util_1.clc.bold;
+          default:
+            return cli_colors_util_1.clc.green;
+        }
+      }
+    };
+    exports.ConsoleLogger = ConsoleLogger;
+    exports.ConsoleLogger = ConsoleLogger = ConsoleLogger_1 = tslib_1.__decorate([
+      (0, core_1.Injectable)(),
+      tslib_1.__param(0, (0, core_1.Optional)()),
+      tslib_1.__param(1, (0, core_1.Optional)()),
+      tslib_1.__metadata("design:paramtypes", [String, Object])
+    ], ConsoleLogger);
+  }
+});
+
+// node_modules/@nestjs/common/services/logger.service.js
+var require_logger_service = __commonJS({
+  "node_modules/@nestjs/common/services/logger.service.js"(exports) {
+    "use strict";
+    var Logger_1;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Logger = void 0;
+    var tslib_1 = (init_modules2(), __toCommonJS(modules_exports2));
+    var core_1 = require_core2();
+    var shared_utils_1 = require_shared_utils();
+    var console_logger_service_1 = require_console_logger_service();
+    var utils_1 = require_utils3();
+    var DEFAULT_LOGGER = new console_logger_service_1.ConsoleLogger();
+    var dateTimeFormatter = new Intl.DateTimeFormat(void 0, {
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      day: "2-digit",
+      month: "2-digit"
+    });
+    var Logger = Logger_1 = class Logger {
+      constructor(context, options = {}) {
+        this.context = context;
+        this.options = options;
+      }
+      get localInstance() {
+        if (Logger_1.staticInstanceRef === DEFAULT_LOGGER) {
+          return this.registerLocalInstanceRef();
+        } else if (Logger_1.staticInstanceRef instanceof Logger_1) {
+          const prototype = Object.getPrototypeOf(Logger_1.staticInstanceRef);
+          if (prototype.constructor === Logger_1) {
+            return this.registerLocalInstanceRef();
+          }
+        }
+        return Logger_1.staticInstanceRef;
+      }
+      error(message, ...optionalParams) {
+        optionalParams = this.context ? (optionalParams.length ? optionalParams : [void 0]).concat(this.context) : optionalParams;
+        this.localInstance?.error(message, ...optionalParams);
+      }
+      log(message, ...optionalParams) {
+        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+        this.localInstance?.log(message, ...optionalParams);
+      }
+      warn(message, ...optionalParams) {
+        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+        this.localInstance?.warn(message, ...optionalParams);
+      }
+      debug(message, ...optionalParams) {
+        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+        this.localInstance?.debug?.(message, ...optionalParams);
+      }
+      verbose(message, ...optionalParams) {
+        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+        this.localInstance?.verbose?.(message, ...optionalParams);
+      }
+      fatal(message, ...optionalParams) {
+        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+        this.localInstance?.fatal?.(message, ...optionalParams);
+      }
+      static error(message, ...optionalParams) {
+        this.staticInstanceRef?.error(message, ...optionalParams);
+      }
+      static log(message, ...optionalParams) {
+        this.staticInstanceRef?.log(message, ...optionalParams);
+      }
+      static warn(message, ...optionalParams) {
+        this.staticInstanceRef?.warn(message, ...optionalParams);
+      }
+      static debug(message, ...optionalParams) {
+        this.staticInstanceRef?.debug?.(message, ...optionalParams);
+      }
+      static verbose(message, ...optionalParams) {
+        this.staticInstanceRef?.verbose?.(message, ...optionalParams);
+      }
+      static fatal(message, ...optionalParams) {
+        this.staticInstanceRef?.fatal?.(message, ...optionalParams);
+      }
+      /**
+       * Print buffered logs and detach buffer.
+       */
+      static flush() {
+        this.isBufferAttached = false;
+        this.logBuffer.forEach((item) => item.methodRef(...item.arguments));
+        this.logBuffer = [];
+      }
+      /**
+       * Attach buffer.
+       * Turns on initialization logs buffering.
+       */
+      static attachBuffer() {
+        this.isBufferAttached = true;
+      }
+      /**
+       * Detach buffer.
+       * Turns off initialization logs buffering.
+       */
+      static detachBuffer() {
+        this.isBufferAttached = false;
+      }
+      static getTimestamp() {
+        return dateTimeFormatter.format(Date.now());
+      }
+      static overrideLogger(logger) {
+        if (Array.isArray(logger)) {
+          Logger_1.logLevels = logger;
+          return this.staticInstanceRef?.setLogLevels(logger);
+        }
+        if ((0, shared_utils_1.isObject)(logger)) {
+          if (logger instanceof Logger_1 && logger.constructor !== Logger_1) {
+            const errorMessage = `Using the "extends Logger" instruction is not allowed in Nest v9. Please, use "extends ConsoleLogger" instead.`;
+            this.staticInstanceRef.error(errorMessage);
+            throw new Error(errorMessage);
+          }
+          this.staticInstanceRef = logger;
+        } else {
+          this.staticInstanceRef = void 0;
+        }
+      }
+      static isLevelEnabled(level) {
+        const logLevels = Logger_1.logLevels;
+        return (0, utils_1.isLogLevelEnabled)(level, logLevels);
+      }
+      registerLocalInstanceRef() {
+        if (this.localInstanceRef) {
+          return this.localInstanceRef;
+        }
+        this.localInstanceRef = new console_logger_service_1.ConsoleLogger(this.context, {
+          timestamp: this.options?.timestamp,
+          logLevels: Logger_1.logLevels
+        });
+        return this.localInstanceRef;
+      }
+    };
+    exports.Logger = Logger;
+    Logger.logBuffer = new Array();
+    Logger.staticInstanceRef = DEFAULT_LOGGER;
+    Logger.WrapBuffer = (target, propertyKey, descriptor3) => {
+      const originalFn = descriptor3.value;
+      descriptor3.value = function(...args) {
+        if (Logger_1.isBufferAttached) {
+          Logger_1.logBuffer.push({
+            methodRef: originalFn.bind(this),
+            arguments: args
+          });
+          return;
+        }
+        return originalFn.call(this, ...args);
+      };
+    };
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger.prototype, "error", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger.prototype, "log", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger.prototype, "warn", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger.prototype, "debug", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger.prototype, "verbose", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger.prototype, "fatal", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger, "error", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger, "log", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger, "warn", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger, "debug", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger, "verbose", null);
+    tslib_1.__decorate([
+      Logger.WrapBuffer,
+      tslib_1.__metadata("design:type", Function),
+      tslib_1.__metadata("design:paramtypes", [Object, Object]),
+      tslib_1.__metadata("design:returntype", void 0)
+    ], Logger, "fatal", null);
+    exports.Logger = Logger = Logger_1 = tslib_1.__decorate([
+      (0, core_1.Injectable)(),
+      tslib_1.__param(0, (0, core_1.Optional)()),
+      tslib_1.__param(1, (0, core_1.Optional)()),
+      tslib_1.__metadata("design:paramtypes", [String, Object])
+    ], Logger);
+  }
+});
+
+// node_modules/@nestjs/common/services/index.js
+var require_services = __commonJS({
+  "node_modules/@nestjs/common/services/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_modules2(), __toCommonJS(modules_exports2));
+    tslib_1.__exportStar(require_console_logger_service(), exports);
+    tslib_1.__exportStar(require_logger_service(), exports);
+  }
+});
+
 // node_modules/@nestjs/common/file-stream/streamable-file.js
 var require_streamable_file = __commonJS({
   "node_modules/@nestjs/common/file-stream/streamable-file.js"(exports) {
@@ -22430,9 +22988,11 @@ var require_streamable_file = __commonJS({
     var util_1 = __require("util");
     var enums_1 = require_enums();
     var shared_utils_1 = require_shared_utils();
+    var services_1 = require_services();
     var StreamableFile = class {
       constructor(bufferOrReadStream, options = {}) {
         this.options = options;
+        this.logger = new services_1.Logger("StreamableFile");
         this.handleError = (err, res) => {
           if (res.destroyed) {
             return;
@@ -22443,6 +23003,9 @@ var require_streamable_file = __commonJS({
           }
           res.statusCode = enums_1.HttpStatus.BAD_REQUEST;
           res.send(err.message);
+        };
+        this.logError = (err) => {
+          this.logger.error(err.message, err.stack);
         };
         if (util_1.types.isUint8Array(bufferOrReadStream)) {
           this.stream = new stream_1.Readable();
@@ -22469,6 +23032,13 @@ var require_streamable_file = __commonJS({
       }
       setErrorHandler(handler2) {
         this.handleError = handler2;
+        return this;
+      }
+      get errorLogger() {
+        return this.logError;
+      }
+      setErrorLogger(handler2) {
+        this.logError = handler2;
         return this;
       }
     };
@@ -22964,545 +23534,6 @@ var require_interfaces = __commonJS({
     tslib_1.__exportStar(require_type_interface(), exports);
     tslib_1.__exportStar(require_version_options_interface(), exports);
     tslib_1.__exportStar(require_web_socket_adapter_interface(), exports);
-  }
-});
-
-// node_modules/@nestjs/common/utils/cli-colors.util.js
-var require_cli_colors_util = __commonJS({
-  "node_modules/@nestjs/common/utils/cli-colors.util.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.yellow = exports.clc = void 0;
-    var isColorAllowed = () => !process.env.NO_COLOR;
-    var colorIfAllowed = (colorFn) => (text) => isColorAllowed() ? colorFn(text) : text;
-    exports.clc = {
-      bold: colorIfAllowed((text) => `\x1B[1m${text}\x1B[0m`),
-      green: colorIfAllowed((text) => `\x1B[32m${text}\x1B[39m`),
-      yellow: colorIfAllowed((text) => `\x1B[33m${text}\x1B[39m`),
-      red: colorIfAllowed((text) => `\x1B[31m${text}\x1B[39m`),
-      magentaBright: colorIfAllowed((text) => `\x1B[95m${text}\x1B[39m`),
-      cyanBright: colorIfAllowed((text) => `\x1B[96m${text}\x1B[39m`)
-    };
-    exports.yellow = colorIfAllowed((text) => `\x1B[38;5;3m${text}\x1B[39m`);
-  }
-});
-
-// node_modules/@nestjs/common/services/utils/is-log-level-enabled.util.js
-var require_is_log_level_enabled_util = __commonJS({
-  "node_modules/@nestjs/common/services/utils/is-log-level-enabled.util.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.isLogLevelEnabled = void 0;
-    var LOG_LEVEL_VALUES = {
-      verbose: 0,
-      debug: 1,
-      log: 2,
-      warn: 3,
-      error: 4,
-      fatal: 5
-    };
-    function isLogLevelEnabled(targetLevel, logLevels) {
-      if (!logLevels || Array.isArray(logLevels) && logLevels?.length === 0) {
-        return false;
-      }
-      if (logLevels.includes(targetLevel)) {
-        return true;
-      }
-      const highestLogLevelValue = logLevels.map((level) => LOG_LEVEL_VALUES[level]).sort((a, b) => b - a)?.[0];
-      const targetLevelValue = LOG_LEVEL_VALUES[targetLevel];
-      return targetLevelValue >= highestLogLevelValue;
-    }
-    exports.isLogLevelEnabled = isLogLevelEnabled;
-  }
-});
-
-// node_modules/@nestjs/common/services/utils/index.js
-var require_utils3 = __commonJS({
-  "node_modules/@nestjs/common/services/utils/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = (init_modules2(), __toCommonJS(modules_exports2));
-    tslib_1.__exportStar(require_is_log_level_enabled_util(), exports);
-  }
-});
-
-// node_modules/@nestjs/common/services/console-logger.service.js
-var require_console_logger_service = __commonJS({
-  "node_modules/@nestjs/common/services/console-logger.service.js"(exports) {
-    "use strict";
-    var ConsoleLogger_1;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ConsoleLogger = void 0;
-    var tslib_1 = (init_modules2(), __toCommonJS(modules_exports2));
-    var core_1 = require_core2();
-    var cli_colors_util_1 = require_cli_colors_util();
-    var shared_utils_1 = require_shared_utils();
-    var utils_1 = require_utils3();
-    var DEFAULT_LOG_LEVELS = [
-      "log",
-      "error",
-      "warn",
-      "debug",
-      "verbose",
-      "fatal"
-    ];
-    var dateTimeFormatter = new Intl.DateTimeFormat(void 0, {
-      year: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      day: "2-digit",
-      month: "2-digit"
-    });
-    var ConsoleLogger = ConsoleLogger_1 = class ConsoleLogger {
-      constructor(context, options = {}) {
-        this.context = context;
-        this.options = options;
-        if (!options.logLevels) {
-          options.logLevels = DEFAULT_LOG_LEVELS;
-        }
-        if (context) {
-          this.originalContext = context;
-        }
-      }
-      log(message, ...optionalParams) {
-        if (!this.isLevelEnabled("log")) {
-          return;
-        }
-        const { messages, context } = this.getContextAndMessagesToPrint([
-          message,
-          ...optionalParams
-        ]);
-        this.printMessages(messages, context, "log");
-      }
-      error(message, ...optionalParams) {
-        if (!this.isLevelEnabled("error")) {
-          return;
-        }
-        const { messages, context, stack } = this.getContextAndStackAndMessagesToPrint([message, ...optionalParams]);
-        this.printMessages(messages, context, "error", "stderr");
-        this.printStackTrace(stack);
-      }
-      warn(message, ...optionalParams) {
-        if (!this.isLevelEnabled("warn")) {
-          return;
-        }
-        const { messages, context } = this.getContextAndMessagesToPrint([
-          message,
-          ...optionalParams
-        ]);
-        this.printMessages(messages, context, "warn");
-      }
-      debug(message, ...optionalParams) {
-        if (!this.isLevelEnabled("debug")) {
-          return;
-        }
-        const { messages, context } = this.getContextAndMessagesToPrint([
-          message,
-          ...optionalParams
-        ]);
-        this.printMessages(messages, context, "debug");
-      }
-      verbose(message, ...optionalParams) {
-        if (!this.isLevelEnabled("verbose")) {
-          return;
-        }
-        const { messages, context } = this.getContextAndMessagesToPrint([
-          message,
-          ...optionalParams
-        ]);
-        this.printMessages(messages, context, "verbose");
-      }
-      fatal(message, ...optionalParams) {
-        if (!this.isLevelEnabled("fatal")) {
-          return;
-        }
-        const { messages, context } = this.getContextAndMessagesToPrint([
-          message,
-          ...optionalParams
-        ]);
-        this.printMessages(messages, context, "fatal");
-      }
-      /**
-       * Set log levels
-       * @param levels log levels
-       */
-      setLogLevels(levels) {
-        if (!this.options) {
-          this.options = {};
-        }
-        this.options.logLevels = levels;
-      }
-      /**
-       * Set logger context
-       * @param context context
-       */
-      setContext(context) {
-        this.context = context;
-      }
-      /**
-       * Resets the logger context to the value that was passed in the constructor.
-       */
-      resetContext() {
-        this.context = this.originalContext;
-      }
-      isLevelEnabled(level) {
-        const logLevels = this.options?.logLevels;
-        return (0, utils_1.isLogLevelEnabled)(level, logLevels);
-      }
-      getTimestamp() {
-        return dateTimeFormatter.format(Date.now());
-      }
-      printMessages(messages, context = "", logLevel = "log", writeStreamType) {
-        messages.forEach((message) => {
-          const pidMessage = this.formatPid(process.pid);
-          const contextMessage = this.formatContext(context);
-          const timestampDiff = this.updateAndGetTimestampDiff();
-          const formattedLogLevel = logLevel.toUpperCase().padStart(7, " ");
-          const formattedMessage = this.formatMessage(logLevel, message, pidMessage, formattedLogLevel, contextMessage, timestampDiff);
-          process[writeStreamType ?? "stdout"].write(formattedMessage);
-        });
-      }
-      formatPid(pid) {
-        return `[Nest] ${pid}  - `;
-      }
-      formatContext(context) {
-        return context ? (0, cli_colors_util_1.yellow)(`[${context}] `) : "";
-      }
-      formatMessage(logLevel, message, pidMessage, formattedLogLevel, contextMessage, timestampDiff) {
-        const output = this.stringifyMessage(message, logLevel);
-        pidMessage = this.colorize(pidMessage, logLevel);
-        formattedLogLevel = this.colorize(formattedLogLevel, logLevel);
-        return `${pidMessage}${this.getTimestamp()} ${formattedLogLevel} ${contextMessage}${output}${timestampDiff}
-`;
-      }
-      stringifyMessage(message, logLevel) {
-        return (0, shared_utils_1.isFunction)(message) ? this.stringifyMessage(message(), logLevel) : (0, shared_utils_1.isPlainObject)(message) || Array.isArray(message) ? `${this.colorize("Object:", logLevel)}
-${JSON.stringify(message, (key, value) => typeof value === "bigint" ? value.toString() : value, 2)}
-` : this.colorize(message, logLevel);
-      }
-      colorize(message, logLevel) {
-        const color = this.getColorByLogLevel(logLevel);
-        return color(message);
-      }
-      printStackTrace(stack) {
-        if (!stack) {
-          return;
-        }
-        process.stderr.write(`${stack}
-`);
-      }
-      updateAndGetTimestampDiff() {
-        const includeTimestamp = ConsoleLogger_1.lastTimestampAt && this.options?.timestamp;
-        const result = includeTimestamp ? this.formatTimestampDiff(Date.now() - ConsoleLogger_1.lastTimestampAt) : "";
-        ConsoleLogger_1.lastTimestampAt = Date.now();
-        return result;
-      }
-      formatTimestampDiff(timestampDiff) {
-        return (0, cli_colors_util_1.yellow)(` +${timestampDiff}ms`);
-      }
-      getContextAndMessagesToPrint(args) {
-        if (args?.length <= 1) {
-          return { messages: args, context: this.context };
-        }
-        const lastElement = args[args.length - 1];
-        const isContext = (0, shared_utils_1.isString)(lastElement);
-        if (!isContext) {
-          return { messages: args, context: this.context };
-        }
-        return {
-          context: lastElement,
-          messages: args.slice(0, args.length - 1)
-        };
-      }
-      getContextAndStackAndMessagesToPrint(args) {
-        if (args.length === 2) {
-          return this.isStackFormat(args[1]) ? {
-            messages: [args[0]],
-            stack: args[1],
-            context: this.context
-          } : {
-            messages: [args[0]],
-            context: args[1]
-          };
-        }
-        const { messages, context } = this.getContextAndMessagesToPrint(args);
-        if (messages?.length <= 1) {
-          return { messages, context };
-        }
-        const lastElement = messages[messages.length - 1];
-        const isStack = (0, shared_utils_1.isString)(lastElement);
-        if (!isStack && !(0, shared_utils_1.isUndefined)(lastElement)) {
-          return { messages, context };
-        }
-        return {
-          stack: lastElement,
-          messages: messages.slice(0, messages.length - 1),
-          context
-        };
-      }
-      isStackFormat(stack) {
-        if (!(0, shared_utils_1.isString)(stack) && !(0, shared_utils_1.isUndefined)(stack)) {
-          return false;
-        }
-        return /^(.)+\n\s+at .+:\d+:\d+$/.test(stack);
-      }
-      getColorByLogLevel(level) {
-        switch (level) {
-          case "debug":
-            return cli_colors_util_1.clc.magentaBright;
-          case "warn":
-            return cli_colors_util_1.clc.yellow;
-          case "error":
-            return cli_colors_util_1.clc.red;
-          case "verbose":
-            return cli_colors_util_1.clc.cyanBright;
-          case "fatal":
-            return cli_colors_util_1.clc.bold;
-          default:
-            return cli_colors_util_1.clc.green;
-        }
-      }
-    };
-    exports.ConsoleLogger = ConsoleLogger;
-    exports.ConsoleLogger = ConsoleLogger = ConsoleLogger_1 = tslib_1.__decorate([
-      (0, core_1.Injectable)(),
-      tslib_1.__param(0, (0, core_1.Optional)()),
-      tslib_1.__param(1, (0, core_1.Optional)()),
-      tslib_1.__metadata("design:paramtypes", [String, Object])
-    ], ConsoleLogger);
-  }
-});
-
-// node_modules/@nestjs/common/services/logger.service.js
-var require_logger_service = __commonJS({
-  "node_modules/@nestjs/common/services/logger.service.js"(exports) {
-    "use strict";
-    var Logger_1;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Logger = void 0;
-    var tslib_1 = (init_modules2(), __toCommonJS(modules_exports2));
-    var core_1 = require_core2();
-    var shared_utils_1 = require_shared_utils();
-    var console_logger_service_1 = require_console_logger_service();
-    var utils_1 = require_utils3();
-    var DEFAULT_LOGGER = new console_logger_service_1.ConsoleLogger();
-    var dateTimeFormatter = new Intl.DateTimeFormat(void 0, {
-      year: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      day: "2-digit",
-      month: "2-digit"
-    });
-    var Logger = Logger_1 = class Logger {
-      constructor(context, options = {}) {
-        this.context = context;
-        this.options = options;
-      }
-      get localInstance() {
-        if (Logger_1.staticInstanceRef === DEFAULT_LOGGER) {
-          return this.registerLocalInstanceRef();
-        } else if (Logger_1.staticInstanceRef instanceof Logger_1) {
-          const prototype = Object.getPrototypeOf(Logger_1.staticInstanceRef);
-          if (prototype.constructor === Logger_1) {
-            return this.registerLocalInstanceRef();
-          }
-        }
-        return Logger_1.staticInstanceRef;
-      }
-      error(message, ...optionalParams) {
-        optionalParams = this.context ? (optionalParams.length ? optionalParams : [void 0]).concat(this.context) : optionalParams;
-        this.localInstance?.error(message, ...optionalParams);
-      }
-      log(message, ...optionalParams) {
-        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
-        this.localInstance?.log(message, ...optionalParams);
-      }
-      warn(message, ...optionalParams) {
-        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
-        this.localInstance?.warn(message, ...optionalParams);
-      }
-      debug(message, ...optionalParams) {
-        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
-        this.localInstance?.debug?.(message, ...optionalParams);
-      }
-      verbose(message, ...optionalParams) {
-        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
-        this.localInstance?.verbose?.(message, ...optionalParams);
-      }
-      fatal(message, ...optionalParams) {
-        optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
-        this.localInstance?.fatal?.(message, ...optionalParams);
-      }
-      static error(message, ...optionalParams) {
-        this.staticInstanceRef?.error(message, ...optionalParams);
-      }
-      static log(message, ...optionalParams) {
-        this.staticInstanceRef?.log(message, ...optionalParams);
-      }
-      static warn(message, ...optionalParams) {
-        this.staticInstanceRef?.warn(message, ...optionalParams);
-      }
-      static debug(message, ...optionalParams) {
-        this.staticInstanceRef?.debug?.(message, ...optionalParams);
-      }
-      static verbose(message, ...optionalParams) {
-        this.staticInstanceRef?.verbose?.(message, ...optionalParams);
-      }
-      static fatal(message, ...optionalParams) {
-        this.staticInstanceRef?.fatal?.(message, ...optionalParams);
-      }
-      /**
-       * Print buffered logs and detach buffer.
-       */
-      static flush() {
-        this.isBufferAttached = false;
-        this.logBuffer.forEach((item) => item.methodRef(...item.arguments));
-        this.logBuffer = [];
-      }
-      /**
-       * Attach buffer.
-       * Turns on initialization logs buffering.
-       */
-      static attachBuffer() {
-        this.isBufferAttached = true;
-      }
-      /**
-       * Detach buffer.
-       * Turns off initialization logs buffering.
-       */
-      static detachBuffer() {
-        this.isBufferAttached = false;
-      }
-      static getTimestamp() {
-        return dateTimeFormatter.format(Date.now());
-      }
-      static overrideLogger(logger) {
-        if (Array.isArray(logger)) {
-          Logger_1.logLevels = logger;
-          return this.staticInstanceRef?.setLogLevels(logger);
-        }
-        if ((0, shared_utils_1.isObject)(logger)) {
-          if (logger instanceof Logger_1 && logger.constructor !== Logger_1) {
-            const errorMessage = `Using the "extends Logger" instruction is not allowed in Nest v9. Please, use "extends ConsoleLogger" instead.`;
-            this.staticInstanceRef.error(errorMessage);
-            throw new Error(errorMessage);
-          }
-          this.staticInstanceRef = logger;
-        } else {
-          this.staticInstanceRef = void 0;
-        }
-      }
-      static isLevelEnabled(level) {
-        const logLevels = Logger_1.logLevels;
-        return (0, utils_1.isLogLevelEnabled)(level, logLevels);
-      }
-      registerLocalInstanceRef() {
-        if (this.localInstanceRef) {
-          return this.localInstanceRef;
-        }
-        this.localInstanceRef = new console_logger_service_1.ConsoleLogger(this.context, {
-          timestamp: this.options?.timestamp,
-          logLevels: Logger_1.logLevels
-        });
-        return this.localInstanceRef;
-      }
-    };
-    exports.Logger = Logger;
-    Logger.logBuffer = new Array();
-    Logger.staticInstanceRef = DEFAULT_LOGGER;
-    Logger.WrapBuffer = (target, propertyKey, descriptor3) => {
-      const originalFn = descriptor3.value;
-      descriptor3.value = function(...args) {
-        if (Logger_1.isBufferAttached) {
-          Logger_1.logBuffer.push({
-            methodRef: originalFn.bind(this),
-            arguments: args
-          });
-          return;
-        }
-        return originalFn.call(this, ...args);
-      };
-    };
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger.prototype, "error", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger.prototype, "log", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger.prototype, "warn", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger.prototype, "debug", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger.prototype, "verbose", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger.prototype, "fatal", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger, "error", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger, "log", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger, "warn", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger, "debug", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger, "verbose", null);
-    tslib_1.__decorate([
-      Logger.WrapBuffer,
-      tslib_1.__metadata("design:type", Function),
-      tslib_1.__metadata("design:paramtypes", [Object, Object]),
-      tslib_1.__metadata("design:returntype", void 0)
-    ], Logger, "fatal", null);
-    exports.Logger = Logger = Logger_1 = tslib_1.__decorate([
-      (0, core_1.Injectable)(),
-      tslib_1.__param(0, (0, core_1.Optional)()),
-      tslib_1.__param(1, (0, core_1.Optional)()),
-      tslib_1.__metadata("design:paramtypes", [String, Object])
-    ], Logger);
   }
 });
 
@@ -24410,7 +24441,7 @@ var require_validation_pipe = __commonJS({
         if (type === "custom" && !this.validateCustomDecorators) {
           return false;
         }
-        const types = [String, Boolean, Number, Array, Object, Buffer];
+        const types = [String, Boolean, Number, Array, Object, Buffer, Date];
         return !types.some((t) => metatype === t) && !(0, shared_utils_1.isNil)(metatype);
       }
       transformPrimitive(value, metadata) {
@@ -33125,17 +33156,6 @@ var require_serializer = __commonJS({
   }
 });
 
-// node_modules/@nestjs/common/services/index.js
-var require_services = __commonJS({
-  "node_modules/@nestjs/common/services/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = (init_modules2(), __toCommonJS(modules_exports2));
-    tslib_1.__exportStar(require_console_logger_service(), exports);
-    tslib_1.__exportStar(require_logger_service(), exports);
-  }
-});
-
 // node_modules/@nestjs/common/utils/forward-ref.util.js
 var require_forward_ref_util = __commonJS({
   "node_modules/@nestjs/common/utils/forward-ref.util.js"(exports) {
@@ -33360,11 +33380,11 @@ var require_discoverable_meta_host_collection = __commonJS({
       }
       static getProvidersByMetaKey(hostContainerRef, metaKey) {
         const wrappersByMetaKey = this.providersByMetaKey.get(hostContainerRef);
-        return wrappersByMetaKey.get(metaKey);
+        return wrappersByMetaKey?.get(metaKey) ?? /* @__PURE__ */ new Set();
       }
       static getControllersByMetaKey(hostContainerRef, metaKey) {
         const wrappersByMetaKey = this.controllersByMetaKey.get(hostContainerRef);
-        return wrappersByMetaKey.get(metaKey);
+        return wrappersByMetaKey?.get(metaKey) ?? /* @__PURE__ */ new Set();
       }
       static inspectInstanceWrapper(hostContainerRef, instanceWrapper, wrapperByMetaKeyMap) {
         const metaKey = _DiscoverableMetaHostCollection.getMetaKeyByInstanceWrapper(instanceWrapper);
@@ -36542,19 +36562,19 @@ var require_messages = __commonJS({
       }
       return instance?.name;
     };
-    var getDependencyName = (dependency) => (
+    var getDependencyName = (dependency, fallbackValue, disambiguated = true) => (
       // use class name
       getInstanceName(dependency) || // use injection token (symbol)
       (0, shared_utils_1.isSymbol)(dependency) && dependency.toString() || // use string directly
-      dependency || // otherwise
-      "+"
+      (dependency ? disambiguated ? `"${dependency}"` : dependency : void 0) || // otherwise
+      fallbackValue
     );
     var getModuleName = (module2) => module2 && getInstanceName(module2.metatype) || "current";
     var stringifyScope = (scope) => (scope || []).map(getInstanceName).join(" -> ");
     var UNKNOWN_DEPENDENCIES_MESSAGE = (type, unknownDependencyContext, module2) => {
-      const { index, name = "dependency", dependencies, key } = unknownDependencyContext;
+      const { index, name, dependencies, key } = unknownDependencyContext;
       const moduleName = getModuleName(module2);
-      const dependencyName = getDependencyName(name);
+      const dependencyName = getDependencyName(name, "dependency");
       const potentialSolutions = (
         // If module's name is well defined
         moduleName !== "current" ? `
@@ -36581,7 +36601,7 @@ Potential solutions:
         message += `. Please make sure that the "${key.toString()}" property is available in the current context.${potentialSolutions}`;
         return message;
       }
-      const dependenciesName = (dependencies || []).map(getDependencyName);
+      const dependenciesName = (dependencies || []).map((dependencyName2) => getDependencyName(dependencyName2, "+", false));
       dependenciesName[index] = "?";
       message += ` (`;
       message += dependenciesName.join(", ");
@@ -79906,11 +79926,11 @@ var package_default = {
     "@flex-development/pathe": "2.0.0",
     "@flex-development/tsconfig-utils": "2.0.2",
     "@flex-development/tutils": "6.0.0-alpha.25",
-    "@nestjs/common": "10.2.7",
+    "@nestjs/common": "10.2.8",
     "@nestjs/config": "3.1.1",
-    "@nestjs/core": "10.2.7",
+    "@nestjs/core": "10.2.8",
     "@nestjs/cqrs": "10.2.6",
-    "@nestjs/testing": "10.2.7",
+    "@nestjs/testing": "10.2.8",
     "@octokit/core": "5.0.1",
     "@octokit/graphql-schema": "14.39.1",
     "@octokit/types": "12.1.1",
@@ -79959,14 +79979,14 @@ var package_default = {
     "trash-cli": "5.0.0",
     "ts-dedent": "2.2.0",
     typescript: "5.2.2",
-    vite: "5.0.0-beta.14",
+    vite: "5.0.0-beta.15",
     "vite-tsconfig-paths": "4.2.1",
     vitest: "1.0.0-beta.2",
     "yaml-eslint-parser": "1.2.2"
   },
   resolutions: {
     chai: "5.0.0-alpha.2",
-    loupe: "3.0.0"
+    loupe: "2.3.7"
   },
   engines: {
     node: ">=20"
