@@ -1,0 +1,54 @@
+# ACTION METADATA
+# https://docs.github.com/actions/creating-actions/metadata-syntax-for-github-actions
+
+---
+name: gh-commit
+author: '@flex-development'
+description: Create commits with the GitHub API
+inputs:
+  api:
+    default: ${{ github.api_url }}
+    description: Base URL of GitHub API
+    required: false
+  files:
+    description: |
+      Newline-delimited list of changed file filters.
+      Each filter should be a file path relative to inputs.workspace.
+      All detected changes will be committed if file filters are not provided.
+      Files will be checked against `git status --porcelain --untracked-files`
+    required: false
+  message:
+    description: Commit message
+    required: true
+  owner:
+    default: ${{ github.repository_owner }}
+    description: Repository owner
+    required: false
+  ref:
+    default: ${{ github.head_ref || github.ref }}
+    description: Name of branch to push commit to
+    required: false
+  repo:
+    default: ${{ github.event.repository.name }}
+    description: Repository name
+    required: false
+  token:
+    default: ${{ github.token }}
+    description: Personal access token (PAT) used to authenticate GitHub API requests
+    required: false
+  trailers:
+    description: Newline-delimited list of git trailers
+    required: false
+  workspace:
+    default: ${{ github.workspace }}
+    description: Path to current working directory
+    required: false
+outputs:
+  sha:
+    description: SHA of created commit
+runs:
+  main: dist/main.mjs
+  using: node20
+branding:
+  color: blue
+  icon: git-commit

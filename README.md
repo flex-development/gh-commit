@@ -1,7 +1,7 @@
 # :white_check_mark: commit-action
 
 [![github release](https://img.shields.io/github/v/release/flex-development/commit-action.svg?include_prereleases&sort=semver)](https://github.com/flex-development/commit-action/releases/latest)
-[![github marketplace](https://img.shields.io/badge/marketplace-commit--action-blue?logo=github)](https://github.com/marketplace/actions/commit-action)
+[![github marketplace](https://img.shields.io/badge/marketplace-gh--commit-blue?logo=github)](https://github.com/marketplace/actions/gh-commit)
 [![codecov](https://codecov.io/gh/flex-development/commit-action/branch/main/graph/badge.svg?token=)](https://codecov.io/gh/flex-development/commit-action)
 [![module type: esm](https://img.shields.io/badge/module%20type-esm-brightgreen)](https://github.com/voxpelli/badges-cjs-esm)
 [![sponsor](https://img.shields.io/badge/sponsor-flex--development-blue.svg?logo=github)](https://github.com/sponsors/flex-development)
