@@ -1197,7 +1197,7 @@ __metadata:
     is-ci: "npm:3.0.1"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:15.0.2"
-    nock: "npm:13.3.7"
+    nock: "npm:13.3.8"
     node-notifier: "npm:10.0.1"
     prettier: "npm:3.0.3"
     reflect-metadata: "npm:0.1.13"
@@ -6395,14 +6395,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nock@npm:13.3.7":
-  version: 13.3.7
-  resolution: "nock@npm:13.3.7"
+"nock@npm:13.3.8":
+  version: 13.3.8
+  resolution: "nock@npm:13.3.8"
   dependencies:
     debug: "npm:^4.1.0"
     json-stringify-safe: "npm:^5.0.1"
     propagate: "npm:^2.0.0"
-  checksum: 4f214138b9a9674f389b90b6792d061f56b6e9285556ce1f61dda42ffcd8409ce757252ecb916e89103ce7968fd5205e64a4850cefa07f3c0acd63f8043fc9cb
+  checksum: a501ac3d2f464f199372a1316f3959e7daec3ff589580d474f2b62e01a79de2cedf0b7c30e1471de93cadba1a3effd1e53cc2eda48edbf1a7ad3278895db0407
   languageName: node
   linkType: hard
 
