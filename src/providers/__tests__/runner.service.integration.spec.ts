@@ -3,7 +3,6 @@
  * @module commit-action/providers/tests/integration/RunnerService
  */
 
-import INPUT_TRAILERS from '#fixtures/input-trailers.fixture'
 import pkg from '#pkg' assert { type: 'json' }
 import { CommitCommand, CommitCommandHandler } from '#src/commands'
 import InputsModule from '#src/inputs.module'
@@ -25,19 +24,13 @@ describe('integration:providers/RunnerService', () => {
   let subject: TestSubject
 
   beforeAll(async ctx => {
-    file = 'commit.txt'
+    file = 'runner-service.txt'
     message = `test: ${ctx.name}\n- ${pkg.repository}`
     ref = 'test/runner-service'
 
-    vi.stubEnv('INPUT_API', 'https://api.github.com')
     vi.stubEnv('INPUT_FILES', file)
     vi.stubEnv('INPUT_MESSAGE', message)
-    vi.stubEnv('INPUT_OWNER', 'flex-development')
     vi.stubEnv('INPUT_REF', join(['refs', 'heads', ref], pathe.sep))
-    vi.stubEnv('INPUT_REPO', 'commit-action')
-    vi.stubEnv('INPUT_TOKEN', process.env.GITHUB_TOKEN!)
-    vi.stubEnv('INPUT_TRAILERS', INPUT_TRAILERS)
-    vi.stubEnv('INPUT_WORKSPACE', process.cwd())
 
     subject = (await (await Test.createTestingModule({
       imports: [CqrsModule, InputsModule, OctokitModule],
