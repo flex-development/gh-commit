@@ -1,6 +1,6 @@
 /**
  * @file Queries - BranchQuery
- * @module commit-action/queries/BranchQuery
+ * @module gh-commit/queries/BranchQuery
  */
 
 import type { Inputs } from '#src/types'

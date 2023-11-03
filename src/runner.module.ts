@@ -1,6 +1,6 @@
 /**
  * @file RunnerModule
- * @module commit-action/RunnerModule
+ * @module gh-commit/RunnerModule
  */
 
 import { Global, Module } from '@nestjs/common'

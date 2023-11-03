@@ -1,6 +1,6 @@
 /**
  * @file Type Tests - CommitCommand
- * @module commit-action/commands/tests/unit-d/CommitCommand
+ * @module gh-commit/commands/tests/unit-d/CommitCommand
  */
 
 import type { BranchQuery, ChangesQuery } from '#src/queries'

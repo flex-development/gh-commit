@@ -1,6 +1,6 @@
 /**
  * @file Type Tests - BranchQueryHandler
- * @module commit-action/queries/tests/unit-d/BranchQueryHandler
+ * @module gh-commit/queries/tests/unit-d/BranchQueryHandler
  */
 
 import type { Branch } from '#src/types'

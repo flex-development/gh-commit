@@ -1,6 +1,6 @@
 /**
  * @file Entry Point - Type Definitions
- * @module commit-action/types
+ * @module gh-commit/types
  */
 
 export type { default as Branch } from './branch'

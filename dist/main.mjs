@@ -79830,14 +79830,14 @@ var commit_command_default = CommitCommand;
 
 // package.json
 var package_default = {
-  name: "@flex-development/commit-action",
+  name: "@flex-development/gh-commit",
   description: "Create commits with the GitHub API",
   version: "0.0.0",
   keywords: [],
   license: "BSD-3-Clause",
-  homepage: "https://github.com/flex-development/commit-action",
-  repository: "https://github.com/flex-development/commit-action.git",
-  bugs: "https://github.com/flex-development/commit-action/issues",
+  homepage: "https://github.com/flex-development/gh-commit",
+  repository: "https://github.com/flex-development/gh-commit.git",
+  bugs: "https://github.com/flex-development/gh-commit/issues",
   author: {
     name: "Lexus Drumgold",
     url: "https://github.com/unicornware"

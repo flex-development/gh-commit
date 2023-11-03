@@ -1,6 +1,6 @@
 /**
  * @file Type Tests - Inputs
- * @module commit-action/types/tests/unit-d/Inputs
+ * @module gh-commit/types/tests/unit-d/Inputs
  */
 
 import type TestSubject from '../inputs'

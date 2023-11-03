@@ -1,6 +1,6 @@
 /**
  * @file Unit Tests - RunnerModule
- * @module commit-action/tests/RunnerModule
+ * @module gh-commit/tests/RunnerModule
  */
 
 import pkg from '#pkg' assert { type: 'json' }

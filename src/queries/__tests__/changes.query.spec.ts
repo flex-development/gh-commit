@@ -1,6 +1,6 @@
 /**
  * @file Unit Tests - ChangesQuery
- * @module commit-action/queries/tests/unit/ChangesQuery
+ * @module gh-commit/queries/tests/unit/ChangesQuery
  */
 
 import TestSubject from '../changes.query'

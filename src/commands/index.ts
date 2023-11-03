@@ -1,6 +1,6 @@
 /**
  * @file Entry Point - Commands
- * @module commit-action/commands
+ * @module gh-commit/commands
  */
 
 export { default as CommitCommand } from './commit.command'

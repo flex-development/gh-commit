@@ -15,8 +15,8 @@ Follow the steps below to setup your local development environment:
 1. Clone repository
 
    ```sh
-   git clone https://github.com/flex-development/commit-action
-   cd commit-action
+   git clone https://github.com/flex-development/gh-commit
+   cd gh-commit
    ```
 
 2. Install binaries with [Homebrew][1]
@@ -297,7 +297,7 @@ A well-written issue
 When you're ready to submit your changes, open a pull request (PR) against `main`:
 
 ```sh
-https://github.com/flex-development/commit-action/compare/main...$branch
+https://github.com/flex-development/gh-commit/compare/main...$branch
 ```
 
 where `$branch` is the name of the branch you'd like to merge into `main`.
@@ -394,5 +394,5 @@ e.g:
 [16]: https://vitest.dev/api/#test-todo
 [17]: https://codecov.io
 [18]: https://docs.codecov.com/docs/codecov-uploader
-[19]: https://github.com/flex-development/commit-action/discussions/new?category=q-a
+[19]: https://github.com/flex-development/gh-commit/discussions/new?category=q-a
 [20]: https://stackoverflow.com/help/minimal-reproducible-example

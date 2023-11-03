@@ -1,6 +1,6 @@
 /**
  * @file Providers - RunnerService
- * @module commit-action/providers/RunnerService
+ * @module gh-commit/providers/RunnerService
  */
 
 import { CommitCommand } from '#src/commands'

@@ -1,6 +1,6 @@
 /**
  * @file Queries - BranchQueryHandler
- * @module commit-action/queries/BranchQueryHandler
+ * @module gh-commit/queries/BranchQueryHandler
  */
 
 import type { Branch } from '#src/types'

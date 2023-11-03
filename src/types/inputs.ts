@@ -1,6 +1,6 @@
 /**
  * @file Type Definitions - Inputs
- * @module commit-action/types/Inputs
+ * @module gh-commit/types/Inputs
  */
 
 /**

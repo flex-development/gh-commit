@@ -1,6 +1,6 @@
 /**
  * @file Unit Tests - CommitCommand
- * @module commit-action/commands/tests/unit/CommitCommand
+ * @module gh-commit/commands/tests/unit/CommitCommand
  */
 
 import INPUT_TRAILERS from '#fixtures/input-trailers.fixture'
@@ -20,7 +20,7 @@ describe('unit:commands/CommitCommand', () => {
         message: headline = 'release: 1.0.0',
         owner: 'flex-development',
         ref: 'release/1.0.0',
-        repo: 'commit-action',
+        repo: 'gh-commit',
         trailers: trailers = <typeof trailers>split(INPUT_TRAILERS, '\n')
       })
     })

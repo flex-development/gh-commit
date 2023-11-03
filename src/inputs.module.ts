@@ -1,6 +1,6 @@
 /**
  * @file InputsModule
- * @module commit-action/InputsModule
+ * @module gh-commit/InputsModule
  */
 
 import * as core from '@actions/core'

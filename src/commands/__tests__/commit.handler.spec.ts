@@ -1,6 +1,6 @@
 /**
  * @file Unit Tests - CommitCommandHandler
- * @module commit-action/commands/tests/unit/CommitCommandHandler
+ * @module gh-commit/commands/tests/unit/CommitCommandHandler
  */
 
 import {
@@ -30,7 +30,7 @@ describe('unit:commands/CommitCommandHandler', () => {
   beforeAll(async () => {
     owner = 'flex-development'
     ref = join(['test', faker.git.branch()], pathe.sep)
-    repo = 'commit-action'
+    repo = 'gh-commit'
 
     subject = (await (await Test.createTestingModule({
       imports: [CqrsModule],

@@ -1,6 +1,6 @@
 /**
  * @file Entry Point - Providers
- * @module commit-action/providers
+ * @module gh-commit/providers
  */
 
 export { default as RunnerService } from './runner.service'

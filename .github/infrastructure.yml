@@ -173,7 +173,7 @@ repository:
   has_issues: true
   has_projects: true
   has_wiki: false
-  homepage: https://github.com/flex-development/commit-action
+  homepage: https://github.com/flex-development/gh-commit
   is_template: false
   private: false
   security_and_analysis:
@@ -187,6 +187,7 @@ repository:
     - commit
     - commit-action
     - github-api
+    - github-action
     - graphql
     - typescript
   visibility: public

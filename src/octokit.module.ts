@@ -1,6 +1,6 @@
 /**
  * @file OctokitModule
- * @module commit-action/OctokitModule
+ * @module gh-commit/OctokitModule
  */
 
 import * as core from '@actions/core'

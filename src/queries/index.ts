@@ -1,6 +1,6 @@
 /**
  * @file Entry Point - Queries
- * @module commit-action/queries
+ * @module gh-commit/queries
  */
 
 export { default as BranchQueryHandler } from './branch.handler'

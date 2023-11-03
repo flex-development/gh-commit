@@ -1,6 +1,6 @@
 /**
  * @file Type Tests - BranchQuery
- * @module commit-action/queries/tests/unit-d/BranchQuery
+ * @module gh-commit/queries/tests/unit-d/BranchQuery
  */
 
 import type TestSubject from '../branch.query'

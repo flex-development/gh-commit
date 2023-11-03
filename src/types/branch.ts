@@ -1,6 +1,6 @@
 /**
  * @file Type Definitions - Branch
- * @module commit-action/types/Branch
+ * @module gh-commit/types/Branch
  */
 
 /**

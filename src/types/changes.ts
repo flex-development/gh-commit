@@ -1,6 +1,6 @@
 /**
  * @file Type Definitions - Changes
- * @module commit-action/types/Changes
+ * @module gh-commit/types/Changes
  */
 
 import type { FileAddition, FileDeletion } from '@octokit/graphql-schema'

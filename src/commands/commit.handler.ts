@@ -1,6 +1,6 @@
 /**
  * @file Commands - CommitCommandHandler
- * @module commit-actions/commands/CommitCommandHandler
+ * @module gh-commit/commands/CommitCommandHandler
  */
 
 import pkg from '#pkg' assert { type: 'json' }

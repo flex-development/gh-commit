@@ -1,6 +1,6 @@
 /**
  * @file Type Tests - Branch
- * @module commit-action/types/tests/unit-d/Branch
+ * @module gh-commit/types/tests/unit-d/Branch
  */
 
 import type TestSubject from '../branch'

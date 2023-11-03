@@ -1,6 +1,6 @@
 /**
  * @file Unit Tests - BranchQueryHandler
- * @module commit-action/queries/tests/unit/BranchQueryHandler
+ * @module gh-commit/queries/tests/unit/BranchQueryHandler
  */
 
 import * as github from '@actions/github'
@@ -39,7 +39,7 @@ describe('unit:queries/BranchQueryHandler', () => {
 
     beforeAll(() => {
       owner = 'flex-development'
-      repo = 'commit-action'
+      repo = 'gh-commit'
     })
 
     it('should return branch payload if query.ref is found', async () => {

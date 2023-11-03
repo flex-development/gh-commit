@@ -1,6 +1,6 @@
 /**
  * @file Commands - CommitCommand
- * @module commit-action/commands/CommitCommand
+ * @module gh-commit/commands/CommitCommand
  */
 
 import { BranchQuery, ChangesQuery } from '#src/queries'

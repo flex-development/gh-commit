@@ -1,6 +1,6 @@
 /**
  * @file Unit Tests - BranchQuery
- * @module commit-action/queries/tests/unit/BranchQuery
+ * @module gh-commit/queries/tests/unit/BranchQuery
  */
 
 import TestSubject from '../branch.query'
@@ -16,7 +16,7 @@ describe('unit:queries/BranchQuery', () => {
       subject = new TestSubject({
         owner: owner = 'flex-development',
         ref: ref = 'refs/heads/main',
-        repo: repo = 'commit-action'
+        repo: repo = 'gh-commit'
       })
     })
 

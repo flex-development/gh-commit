@@ -1,6 +1,6 @@
 /**
  * @file Type Tests - Changes
- * @module commit-action/types/tests/unit-d/Changes
+ * @module gh-commit/types/tests/unit-d/Changes
  */
 
 import type { FileAddition, FileDeletion } from '@octokit/graphql-schema'

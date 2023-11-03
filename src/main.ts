@@ -1,6 +1,6 @@
 /**
  * @file Main
- * @module commit-action/main
+ * @module gh-commit/main
  */
 
 import * as core from '@actions/core'

@@ -1,6 +1,6 @@
 /**
  * @file Queries - ChangesQueryHandler
- * @module commit-action/queries/ChangesQueryHandler
+ * @module gh-commit/queries/ChangesQueryHandler
  */
 
 import type { Changes } from '#src/types'

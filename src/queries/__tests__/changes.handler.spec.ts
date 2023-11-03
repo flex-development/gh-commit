@@ -1,6 +1,6 @@
 /**
  * @file Unit Tests - ChangesQueryHandler
- * @module commit-action/queries/tests/unit/ChangesQueryHandler
+ * @module gh-commit/queries/tests/unit/ChangesQueryHandler
  */
 
 import type { Changes } from '#src/types'

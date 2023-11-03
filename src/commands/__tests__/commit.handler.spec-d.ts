@@ -1,6 +1,6 @@
 /**
  * @file Type Tests - CommitCommandHandler
- * @module commit-action/commands/tests/unit-d/CommitCommandHandler
+ * @module gh-commit/commands/tests/unit-d/CommitCommandHandler
  */
 
 import type { ICommandHandler } from '@nestjs/cqrs'

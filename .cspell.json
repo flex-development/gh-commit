@@ -2,10 +2,10 @@
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
   "allowCompoundWords": true,
   "caseSensitive": false,
-  "dictionaries": ["@flex-development/commit-action"],
+  "dictionaries": ["@flex-development/gh-commit"],
   "dictionaryDefinitions": [
     {
-      "name": "@flex-development/commit-action",
+      "name": "@flex-development/gh-commit",
       "path": "./.dictionary.txt"
     }
   ],
