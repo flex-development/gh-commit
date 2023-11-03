@@ -14,6 +14,7 @@ gpgsign
 hmarr
 iife
 jchen
+kaisugi
 lcov
 lintstagedrc
 mkbuild
