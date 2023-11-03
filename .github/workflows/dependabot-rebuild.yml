@@ -1,9 +1,10 @@
-# Dependabot Dedupe
+# Dependabot Rebuild
 #
-# Deduplicate dependencies for @dependabot.
+# Rebuild GitHub Action for @dependabot.
 #
-# Note: This workflow can be removed once dependabot supports some type of automatic deduplication.
-# See https://github.com/dependabot/dependabot-core/issues/5830 for details.
+# Note: This `jobs.dependabot-rebuild.dedupe` step can be removed once dependabot supports some type
+# of automatic deduplication. See https://github.com/dependabot/dependabot-core/issues/5830 for
+# details.
 #
 # References:
 #
@@ -17,21 +18,28 @@
 # - https://github.com/actions/setup-node
 # - https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#yarn2-configuration
 # - https://github.com/hmarr/debug-action
+# - https://yarnpkg.com/cli/dedupe
+# - https://yarnpkg.com/cli/install
 
 ---
-name: dependabot-dedupe
+name: dependabot-rebuild
 on:
   pull_request:
     branches:
       - main
+permissions:
+  packages: read
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  YARN_ENABLE_GLOBAL_CACHE: true
+  YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  YARN_ENABLE_SCRIPTS: false
 concurrency:
   cancel-in-progress: true
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
-  dependabot-dedupe:
+  dependabot-rebuild:
     if: github.actor == 'dependabot[bot]' && startsWith(github.head_ref, 'dependabot/npm_and_yarn/')
-    permissions:
-      packages: read
     runs-on: ubuntu-latest
     steps:
       - id: debug
@@ -57,18 +65,24 @@ jobs:
           cache: yarn
           cache-dependency-path: yarn.lock
           node-version-file: .nvmrc
+      - id: yarn
+        name: Install dependencies
+        run: yarn
       - id: dedupe
         name: Deduplicate dependencies
+        run: yarn fix:dedupe
+      - id: rebuild
+        name: Rebuild action
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          YARN_ENABLE_GLOBAL_CACHE: true
-          YARN_ENABLE_IMMUTABLE_INSTALLS: false
-          YARN_ENABLE_SCRIPTS: false
-        run: yarn dedupe --mode=update-lockfile
+          NODE_NO_WARNINGS: 1
+        run: yarn build
+      - id: status
+        name: Print git status
+        run: git status --porcelain
       - id: commit
-        name: Commit and push yarn.lock
+        name: Commit and push
         uses: ./
         with:
-          message: 'build(yarn): [dependabot skip] deduplicate dependencies for @dependabot'
+          message: 'build: [dependabot skip] rebuild action for @dependabot'
           token: ${{ steps.bot-token.outputs.token }}
           trailers: 'Signed-off-by: ${{ vars.BOT_NAME }} <${{ vars.BOT_EMAIL }}>'

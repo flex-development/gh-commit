@@ -39,7 +39,7 @@ branches:
           - context: codecov/project/queries
             app_id: 254
           - context: commitlint
-          - context: dependabot-dedupe
+          - context: dependabot-rebuild
           - context: format
           - context: gitguardian
           - context: lint
