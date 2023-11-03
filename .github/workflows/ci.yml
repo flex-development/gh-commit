@@ -287,6 +287,8 @@ jobs:
       - commitlint
       - gitguardian
       - preflight
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -298,7 +300,6 @@ jobs:
         name: Checkout ${{ env.REF_NAME }}
         uses: actions/checkout@v4.1.1
         with:
-          persist-credentials: false
           ref: ${{ env.REF }}
       - id: test-files-check
         name: Check for test files

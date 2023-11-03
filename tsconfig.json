@@ -30,7 +30,7 @@
     "outDir": "dist",
     "paths": {
       "#fixtures/*": ["__fixtures__/*"],
-      "#src": ["src/index"],
+      "#pkg": ["package.json"],
       "#src/*": ["src/*"],
       "#tests/*": ["__tests__/*"]
     },

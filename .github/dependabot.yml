@@ -28,6 +28,9 @@ updates:
       include: scope
     directory: /
     groups:
+      actions:
+        patterns:
+          - '@actions/*'
       commitlint:
         patterns:
           - '@commitlint/*'

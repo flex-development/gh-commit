@@ -3,33 +3,25 @@
  * @module commit-action/commands/tests/unit/CommitCommand
  */
 
+import INPUT_TRAILERS from '#fixtures/input-trailers.fixture'
 import { BranchQuery } from '#src/queries'
-import { join } from '@flex-development/tutils'
+import { join, split } from '@flex-development/tutils'
 import TestSubject from '../commit.command'
 
 describe('unit:commands/CommitCommand', () => {
   describe('constructor', () => {
-    let bot: { email: string; name: string }
     let headline: string
     let trailers: [string, string]
     let subject: TestSubject
 
     beforeAll(() => {
-      bot = {
-        email: '148604919+flex-development[bot]@users.noreply.github.com',
-        name: 'flex-development[bot]'
-      }
-
       subject = new TestSubject({
         files: ['CHANGELOG.md', 'package.json'],
         message: headline = 'release: 1.0.0',
         owner: 'flex-development',
         ref: 'release/1.0.0',
         repo: 'commit-action',
-        trailers: trailers = [
-          `Signed-off-by: ${bot.name} <${bot.email}>`,
-          'Co-authored-by: unicornware<unicornware@flexdevelopment.llc>'
-        ]
+        trailers: trailers = <typeof trailers>split(INPUT_TRAILERS, '\n')
       })
     })
 

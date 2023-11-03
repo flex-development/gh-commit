@@ -1062,6 +1062,7 @@ __metadata:
     "@flex-development/tsconfig-utils": "npm:2.0.2"
     "@flex-development/tutils": "npm:6.0.0-alpha.25"
     "@nestjs/common": "npm:10.2.7"
+    "@nestjs/config": "npm:3.1.1"
     "@nestjs/core": "npm:10.2.7"
     "@nestjs/cqrs": "npm:10.2.6"
     "@nestjs/testing": "npm:10.2.7"
@@ -1628,6 +1629,21 @@ __metadata:
     class-validator:
       optional: true
   checksum: 0d1a1ddeeb97493eb71e49fa2db8f312b90434627e60e92f86fcd144100ec81901a0649bcd5558604455436ca60288405f2699825e57702b65d0057aa4f5ad4e
+  languageName: node
+  linkType: hard
+
+"@nestjs/config@npm:3.1.1":
+  version: 3.1.1
+  resolution: "@nestjs/config@npm:3.1.1"
+  dependencies:
+    dotenv: "npm:16.3.1"
+    dotenv-expand: "npm:10.0.0"
+    lodash: "npm:4.17.21"
+    uuid: "npm:9.0.0"
+  peerDependencies:
+    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
+    reflect-metadata: ^0.1.13
+  checksum: d5ab47aa0b6653f4862a202f5cbb1505cdbfa630048076c4d81187acebe0f5966ce71c1d2759db5a1856fe6d566f3fdab36fac69e83724b826da27ec372d5aa5
   languageName: node
   linkType: hard
 
@@ -3527,6 +3543,20 @@ __metadata:
   dependencies:
     is-obj: "npm:^2.0.0"
   checksum: 1200a4f6f81151161b8526c37966d60738cf12619b0ed1f55be01bdb55790bf0a5cd1398b8f2c296dcc07d0a7c2dd0e650baf0b069c367e74bb5df2f6603aba0
+  languageName: node
+  linkType: hard
+
+"dotenv-expand@npm:10.0.0":
+  version: 10.0.0
+  resolution: "dotenv-expand@npm:10.0.0"
+  checksum: b41eb278bc96b92cbf3037ca5f3d21e8845bf165dc06b6f9a0a03d278c2bd5a01c0cfbb3528ae3a60301ba1a8a9cace30e748c54b460753bc00d4c014b675597
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:16.3.1":
+  version: 16.3.1
+  resolution: "dotenv@npm:16.3.1"
+  checksum: dbb778237ef8750e9e3cd1473d3c8eaa9cc3600e33a75c0e36415d0fa0848197f56c3800f77924c70e7828f0b03896818cd52f785b07b9ad4d88dba73fbba83f
   languageName: node
   linkType: hard
 
@@ -5870,7 +5900,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.15, lodash@npm:^4.17.21":
+"lodash@npm:4.17.21, lodash@npm:^4.17.15, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: c08619c038846ea6ac754abd6dd29d2568aa705feb69339e836dfa8d8b09abbb2f859371e86863eda41848221f9af43714491467b5b0299122431e202bb0c532

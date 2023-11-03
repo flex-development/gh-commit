@@ -3,6 +3,7 @@
  * @module commit-actions/commands/CommitCommandHandler
  */
 
+import pkg from '#pkg' assert { type: 'json' }
 import type { Branch, Changes } from '#src/types'
 import pathe from '@flex-development/pathe'
 import { isNull, join, type Nullable } from '@flex-development/tutils'
@@ -13,7 +14,6 @@ import type {
 } from '@octokit/graphql-schema'
 import * as graphql from 'graphql'
 import gql from 'graphql-tag'
-import pkg from '../../package.json' assert { type: 'json' }
 import CommitCommand from './commit.command'
 
 /**

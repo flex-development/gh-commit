@@ -107,6 +107,15 @@ Follow the steps below to setup your local development environment:
 | `CODECOV_TOKEN`     |
 | `GITHUB_TOKEN`      |
 | `HOMEBREW_BREWFILE` |
+| `INPUT_API`         |
+| `INPUT_FILES`       |
+| `INPUT_MESSAGE`     |
+| `INPUT_OWNER`       |
+| `INPUT_REF`         |
+| `INPUT_REPO`        |
+| `INPUT_TOKEN`       |
+| `INPUT_TRAILERS`    |
+| `INPUT_WORKSPACE`   |
 | `NODE_NO_WARNINGS`  |
 | `ZSH_DOTENV_FILE`   |
 

@@ -63,16 +63,16 @@ class CommitCommand extends ChangesQuery {
    */
   constructor({
     message,
-    trailers = [],
     owner,
     ref,
     repo,
+    trailers = [],
     ...rest
   }: CommitCommandDTO) {
     super(rest)
 
     if (message && trailers.length) {
-      message += '\n'
+      message += '\n'.repeat(2)
       for (const trailer of trailers) message += trailer + '\n'
     }
 

@@ -76,6 +76,7 @@
     "@flex-development/tsconfig-utils": "2.0.2",
     "@flex-development/tutils": "6.0.0-alpha.25",
     "@nestjs/common": "10.2.7",
+    "@nestjs/config": "3.1.1",
     "@nestjs/core": "10.2.7",
     "@nestjs/cqrs": "10.2.6",
     "@nestjs/testing": "10.2.7",
