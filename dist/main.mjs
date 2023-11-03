@@ -79965,7 +79965,8 @@ var package_default = {
     "yaml-eslint-parser": "1.2.2"
   },
   resolutions: {
-    chai: "5.0.0-alpha.2"
+    chai: "5.0.0-alpha.2",
+    loupe: "3.0.0"
   },
   engines: {
     node: ">=20"
