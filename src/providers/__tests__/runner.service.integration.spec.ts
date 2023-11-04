@@ -26,7 +26,7 @@ describe('integration:providers/RunnerService', () => {
   beforeAll(async ctx => {
     file = 'runner-service.txt'
     message = `test: ${ctx.name}\n- ${pkg.repository}`
-    ref = 'test/runner-service'
+    ref = join(['test', 'runner-service', process.env.GITHUB_RUN_ID], pathe.sep)
 
     vi.stubEnv('INPUT_FILES', file)
     vi.stubEnv('INPUT_MESSAGE', message)

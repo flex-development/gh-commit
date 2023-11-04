@@ -16,4 +16,8 @@ beforeAll(() => {
   vi.stubEnv('INPUT_TOKEN', process.env.GITHUB_TOKEN!)
   vi.stubEnv('INPUT_TRAILERS', INPUT_TRAILERS)
   vi.stubEnv('INPUT_WORKSPACE', process.cwd())
+
+  if (!process.env.GITHUB_RUN_ID) {
+    vi.stubEnv('GITHUB_RUN_ID', faker.string.numeric({ length: 10 }))
+  }
 })
