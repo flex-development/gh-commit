@@ -3,13 +3,13 @@
  * @module gh-commit/providers/tests/integration/RunnerService
  */
 
+import server from '#fixtures/server.fixture'
 import pkg from '#pkg' assert { type: 'json' }
 import { CommitCommand, CommitCommandHandler } from '#src/commands'
 import InputsModule from '#src/inputs.module'
 import OctokitModule from '#src/octokit.module'
 import { BranchQueryHandler, ChangesQueryHandler } from '#src/queries'
 import type { Spy } from '#tests/interfaces'
-import git from '#tests/utils/git.util'
 import * as core from '@actions/core'
 import pathe from '@flex-development/pathe'
 import { join, noop } from '@flex-development/tutils'
@@ -23,10 +23,18 @@ describe('integration:providers/RunnerService', () => {
   let ref: string
   let subject: TestSubject
 
+  afterAll(() => {
+    server.close()
+  })
+
+  afterEach(() => {
+    server.resetHandlers()
+  })
+
   beforeAll(async ctx => {
     file = 'runner-service.txt'
     message = `test: ${ctx.name}\n- ${pkg.repository}`
-    ref = join(['test', 'runner-service', process.env.GITHUB_RUN_ID], pathe.sep)
+    ref = 'test/runner-service'
 
     vi.stubEnv('INPUT_FILES', file)
     vi.stubEnv('INPUT_MESSAGE', message)
@@ -41,21 +49,23 @@ describe('integration:providers/RunnerService', () => {
         TestSubject
       ]
     }).compile()).init()).get(TestSubject)
+
+    server.listen()
   })
 
   describe('#run', () => {
     let execute: Spy<CommandBus['execute']>
     let setOutput: Spy<(typeof core)['setOutput']>
 
-    afterAll(async () => {
-      await git(['branch', '--delete', ref])
-      await git(['push', 'origin', '--no-verify', '--delete', ref])
-    })
+    // afterAll(async () => {
+    //   await git(['branch', '--delete', ref])
+    //   await git(['push', 'origin', '--no-verify', '--delete', ref])
+    // })
 
-    beforeAll(async () => {
-      await git(['branch', ref])
-      await git(['push', 'origin', '--no-verify', ref])
-    })
+    // beforeAll(async () => {
+    //   await git(['branch', ref])
+    //   await git(['push', 'origin', '--no-verify', ref])
+    // })
 
     beforeEach(async () => {
       execute = vi.spyOn(CommandBus.prototype, 'execute')

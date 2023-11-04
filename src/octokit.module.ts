@@ -33,6 +33,9 @@ import type { Inputs } from './types'
             error: core.error.bind(core),
             info: core.info.bind(core),
             warn: core.warning.bind(core)
+          },
+          request: {
+            fetch: async (url: string, opts: RequestInit) => fetch(url, opts)
           }
         })
       }

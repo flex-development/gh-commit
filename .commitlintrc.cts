@@ -18,7 +18,7 @@ const config: UserConfig = {
     'scope-enum': [
       RuleConfigSeverity.Error,
       'always',
-      scopes(['action', 'commands', 'inputs', 'queries', 'runner'])
+      scopes(['action', 'commands', 'inputs', 'octokit', 'queries', 'runner'])
     ]
   }
 }

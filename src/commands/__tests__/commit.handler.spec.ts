@@ -3,6 +3,7 @@
  * @module gh-commit/commands/tests/unit/CommitCommandHandler
  */
 
+import server from '#fixtures/server.fixture'
 import {
   BranchQuery,
   BranchQueryHandler,
@@ -12,11 +13,10 @@ import type { Spy } from '#tests/interfaces'
 import * as github from '@actions/github'
 import { toURL } from '@flex-development/mlly'
 import pathe from '@flex-development/pathe'
-import { DOT, includes, join } from '@flex-development/tutils'
+import { DOT, join } from '@flex-development/tutils'
 import { CqrsModule } from '@nestjs/cqrs'
 import { Test } from '@nestjs/testing'
 import { Octokit } from '@octokit/core'
-import type { EndpointInterface } from '@octokit/types'
 import fs from 'node:fs'
 import CommitCommand from '../commit.command'
 import TestSubject from '../commit.handler'
@@ -27,10 +27,18 @@ describe('unit:commands/CommitCommandHandler', () => {
   let repo: string
   let subject: TestSubject
 
+  afterAll(() => {
+    server.close()
+  })
+
+  afterEach(() => {
+    server.resetHandlers()
+  })
+
   beforeAll(async () => {
-    owner = 'flex-development'
+    owner = import.meta.env.INPUT_OWNER
     ref = join(['test', faker.git.branch()], pathe.sep)
-    repo = 'gh-commit'
+    repo = import.meta.env.INPUT_REPO
 
     subject = (await (await Test.createTestingModule({
       imports: [CqrsModule],
@@ -40,7 +48,7 @@ describe('unit:commands/CommitCommandHandler', () => {
         TestSubject,
         {
           provide: Octokit,
-          useValue: github.getOctokit(process.env.GITHUB_TOKEN!, {
+          useValue: github.getOctokit(import.meta.env.GITHUB_TOKEN, {
             log: {
               debug: vi.fn().mockName('octokit.log.debug'),
               error: vi.fn().mockName('octokit.log.error'),
@@ -48,44 +56,14 @@ describe('unit:commands/CommitCommandHandler', () => {
               warn: vi.fn().mockName('octokit.log.warn')
             },
             request: {
-              fetch: vi.fn(async (
-                url: string,
-                opts: ReturnType<EndpointInterface>
-              ): Promise<Response> => {
-                /**
-                 * GraphQL mutation indicator.
-                 *
-                 * @const {boolean} mutation
-                 */
-                const mutation: boolean = includes(opts.body, 'payload: create')
-
-                return new Response(JSON.stringify({
-                  data: {
-                    payload: mutation
-                      ? { commit: { oid: faker.git.commitSha() } }
-                      : {
-                        ref: {
-                          name: ref,
-                          repository: {
-                            nameWithOwner: join([owner, repo], pathe.sep)
-                          },
-                          target: {
-                            oid: faker.git.commitSha()
-                          }
-                        }
-                      }
-                  }
-                }), {
-                  headers: <Record<string, string>>opts.headers,
-                  status: mutation ? 201 : 200,
-                  statusText: mutation ? 'CREATED' : 'OK'
-                })
-              })
+              fetch: async (url: string, opts: RequestInit) => fetch(url, opts)
             }
           })
         }
       ]
     }).compile()).init()).get(TestSubject)
+
+    server.listen()
   })
 
   describe('execute', () => {

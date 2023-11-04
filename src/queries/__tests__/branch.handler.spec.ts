@@ -20,7 +20,7 @@ describe('unit:queries/BranchQueryHandler', () => {
         TestSubject,
         {
           provide: Octokit,
-          useValue: github.getOctokit(process.env.GITHUB_TOKEN!, {
+          useValue: github.getOctokit(import.meta.env.GITHUB_TOKEN, {
             log: {
               debug: vi.fn().mockName('octokit.log.debug'),
               error: vi.fn().mockName('octokit.log.error'),
