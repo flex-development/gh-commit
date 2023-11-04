@@ -79907,8 +79907,8 @@ var package_default = {
     "test:cov:serve": "vite preview --outDir ./coverage",
     "test:cov:upload": "./codecov -t $CODECOV_TOKEN -f ./coverage/lcov.info",
     "test:watch": "vitest",
-    typecheck: "vitest typecheck --run",
-    "typecheck:watch": "vitest typecheck"
+    typecheck: "yarn test --typecheck",
+    "typecheck:watch": "vitest --typecheck"
   },
   devDependencies: {
     "@actions/core": "1.10.1",
@@ -79932,18 +79932,18 @@ var package_default = {
     "@nestjs/cqrs": "10.2.6",
     "@nestjs/testing": "10.2.8",
     "@octokit/core": "5.0.1",
-    "@octokit/graphql-schema": "14.39.1",
+    "@octokit/graphql-schema": "14.39.2",
     "@octokit/types": "12.1.1",
     "@types/chai": "4.3.9",
     "@types/eslint": "8.44.6",
     "@types/is-ci": "3.0.3",
     "@types/node": "20.8.9",
     "@types/node-notifier": "8.0.4",
-    "@typescript-eslint/eslint-plugin": "6.9.0",
-    "@typescript-eslint/parser": "6.9.0",
+    "@typescript-eslint/eslint-plugin": "6.9.1",
+    "@typescript-eslint/parser": "6.9.1",
     "@vates/toggle-scripts": "1.0.0",
-    "@vitest/coverage-v8": "1.0.0-beta.2",
-    "@vitest/expect": "1.0.0-beta.2",
+    "@vitest/coverage-v8": "1.0.0-beta.3",
+    "@vitest/expect": "1.0.0-beta.3",
     chai: "5.0.0-alpha.2",
     "cross-env": "7.0.3",
     cspell: "7.3.8",
@@ -79970,7 +79970,7 @@ var package_default = {
     "is-ci": "3.0.1",
     "jsonc-eslint-parser": "2.4.0",
     "lint-staged": "15.0.2",
-    nock: "13.3.7",
+    nock: "13.3.8",
     "node-notifier": "10.0.1",
     prettier: "3.0.3",
     "reflect-metadata": "0.1.13",
@@ -79981,12 +79981,12 @@ var package_default = {
     typescript: "5.2.2",
     vite: "5.0.0-beta.15",
     "vite-tsconfig-paths": "4.2.1",
-    vitest: "1.0.0-beta.2",
+    vitest: "1.0.0-beta.3",
     "yaml-eslint-parser": "1.2.2"
   },
   resolutions: {
     chai: "5.0.0-alpha.2",
-    loupe: "2.3.7"
+    loupe: "3.0.1"
   },
   engines: {
     node: ">=20"
