@@ -22,7 +22,12 @@ Create commits with the [GitHub API][1]
 
 ## What is this?
 
-**TODO**: action overview
+Create commits with GitHub Actions via the [GitHub GraphQL API][1].
+
+Commits made using this action are automatically signed by GitHub if supported and marked as verified in the user
+interface.
+
+![commit.png](./commit.png)
 
 ## Use
 
