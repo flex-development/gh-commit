@@ -79932,7 +79932,7 @@ var package_default = {
     "@nestjs/cqrs": "10.2.6",
     "@nestjs/testing": "10.2.8",
     "@octokit/core": "5.0.1",
-    "@octokit/graphql-schema": "14.39.2",
+    "@octokit/graphql-schema": "14.40.1",
     "@octokit/types": "12.1.1",
     "@types/chai": "4.3.9",
     "@types/eslint": "8.44.6",
