@@ -1157,12 +1157,31 @@ const config = {
       }
     },
     {
-      files: [
-        '.github/dependabot.yml',
-        '.github/workflows/*.yml',
-        'action.yml',
-        'docker*.yml'
-      ],
+      files: '.github/dependabot.yml',
+      rules: {
+        'yml/sort-keys': [
+          2,
+          {
+            order: ['version', 'registries', 'updates'],
+            pathPattern: '^$'
+          }
+        ]
+      }
+    },
+    {
+      files: '.github/workflows/*.yml',
+      rules: {
+        'yml/sort-keys': [
+          2,
+          {
+            order: ['name', 'on', 'permissions', 'env', 'concurrency', 'jobs'],
+            pathPattern: '^$'
+          }
+        ]
+      }
+    },
+    {
+      files: ['docker*.yml', '**/*.md/*.+(yaml|yml)'],
       rules: {
         'yml/sort-keys': 0
       }
@@ -1177,6 +1196,26 @@ const config = {
       files: ['.vscode/launch.json'],
       rules: {
         'jsonc/sort-keys': 0
+      }
+    },
+    {
+      files: 'action.yml',
+      rules: {
+        'yml/sort-keys': [
+          2,
+          {
+            order: [
+              'name',
+              'author',
+              'description',
+              'inputs',
+              'outputs',
+              'runs',
+              'branding'
+            ],
+            pathPattern: '^$'
+          }
+        ]
       }
     }
   ],

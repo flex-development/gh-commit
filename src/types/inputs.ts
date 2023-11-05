@@ -43,7 +43,7 @@ type Inputs = {
    * Name of branch to push commit to.
    *
    * @default
-   *  github.head_ref || github.ref
+   *  github.event.workflow_run.head_branch || github.head_ref || github.ref
    */
   ref: string
 

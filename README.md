@@ -17,8 +17,20 @@ Create commits with the [GitHub API][1]
 
 - [What is this?](#what-is-this)
 - [Use](#use)
-- [Inputs](#inputs)
-- [Outputs](#outputs)
+  - [Example Workflow](#example-workflow)
+  - [Inputs](#inputs)
+    - [`api`](#api)
+    - [`files`](#files)
+    - [`message`](#message)
+    - [`owner`](#owner)
+    - [`ref`](#ref)
+    - [`repo`](#repo)
+    - [`token`](#token)
+      - [Required Permissions](#required-permissions)
+    - [`trailers`](#trailers)
+    - [`workspace`](#workspace)
+  - [Outputs](#outputs)
+    - [`sha`](#sha)
 
 ## What is this?
 
@@ -31,14 +43,199 @@ interface.
 
 ## Use
 
-**TODO**: usage
+### Example Workflow
 
-## Inputs
+```yaml
+# Release Branch
+#
+# Execute version bump and changelog operations on release branch creation.
+#
+# References:
+#
+# - https://docs.github.com/actions/learn-github-actions/contexts
+# - https://docs.github.com/actions/learn-github-actions/expressions
+# - https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#create
+# - https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions
+# - https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#create
+# - https://github.com/actions/checkout
+# - https://github.com/actions/create-github-app-token
+# - https://github.com/flex-development/grease
+# - https://github.com/hmarr/debug-action
+# - https://github.com/kaisugi/action-regex-match
+# - https://regex101.com/r/OwpOr2
 
-**TODO**: inputs
+---
+name: release-branch
+on: create
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+jobs:
+  preflight:
+    if: |
+      github.ref_type == 'branch' &&
+      startsWith(github.ref_name, 'release/') &&
+      contains(vars.MAINTAINERS, github.actor)
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.message.outputs.result }}
+      tag: ${{ steps.tag.outputs.result }}
+      version: ${{ steps.version.outputs.match }}
+    steps:
+      - id: debug
+        name: Print environment variables and event payload
+        uses: hmarr/debug-action@v2.1.0
+      - id: checkout
+        name: Checkout ${{ github.ref_name }}
+        uses: actions/checkout@v4.1.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.ref }}
+      - id: version
+        name: Get release version
+        uses: kaisugi/action-regex-match@v1.0.0
+        with:
+          regex: ${{ vars.RELEASE_BRANCH_REGEX }}
+          text: ${{ github.ref_name }}
+      - id: tag
+        name: Get release tag
+        run: |
+          echo "result=$(jq .tagprefix grease.config.json -r)${{ steps.version.outputs.match }}" >>$GITHUB_OUTPUT
+      - id: message
+        name: Get release message
+        run: |
+          echo "result=release: ${{ steps.tag.outputs.result }}" >>$GITHUB_OUTPUT
+  prepare:
+    needs: preflight
+    permissions:
+      packages: read
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - id: bot-token
+        name: Get bot token
+        uses: actions/create-github-app-token@v1.5.1
+        with:
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+      - id: checkout
+        name: Checkout ${{ github.ref_name }}
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.ref }}
+          token: ${{ steps.bot-token.outputs.token }}
+      - id: yarn
+        name: Install dependencies
+        env:
+          HUSKY: 0
+        run: yarn && echo "$GITHUB_WORKSPACE/node_modules/.bin" >>$GITHUB_PATH
+      - id: build
+        name: Build project
+        env:
+          NODE_NO_WARNINGS: 1
+        run: yarn build
+      - id: bump
+        name: Bump manifest version to ${{ needs.preflight.outputs.version }}
+        run: grease bump -w ${{ needs.preflight.outputs.version }}
+      - id: changelog
+        name: Add CHANGELOG entry for ${{ needs.preflight.outputs.tag }}
+        run: |
+          echo "$(grease changelog)" >>$GITHUB_STEP_SUMMARY
+          grease changelog -sw
+      - id: commit
+        name: Commit and push release preparation
+        uses: flex-development/gh-commit@0.0.0
+        with:
+          message: ${{ needs.preflight.outputs.message }}
+          token: ${{ steps.bot-token.outputs.token }}
+          trailers: 'Signed-off-by: ${{ vars.BOT_NAME }} <${{ vars.BOT_EMAIL }}>'
+      - id: commit-url
+        name: Print commit url
+        run: echo ${{ format('{0}/{1}/commit/{2}', github.server_url, github.repository, steps.commit.outputs.sha) }}
+```
 
-## Outputs
+> See [`release-branch.yml`](.github/workflows/release-branch.yml) for a more robust example.
 
-**TODO**: outputs
+### Inputs
+
+#### `api`
+
+> default: `${{ github.api_url }}`\
+> required: `false`
+
+Base URL of GitHub API.
+
+#### `files`
+
+> required: `false`
+
+Newline-delimited list of changed file filters.
+
+Each filter should be a file path relative to [`workspace`](#workspace).
+
+All detected changes will be committed if file filters are not provided.
+
+Files will be checked against `git status --porcelain --untracked-files`.
+
+#### `message`
+
+> required: `true`
+
+Commit header and body without trailers.
+
+#### `owner`
+
+> default: `${{ github.repository_owner }}`\
+> required: `false`
+
+Repository owner.
+
+#### `ref`
+
+> default: `${{ github.event.workflow_run.head_branch || github.head_ref || github.ref }}`\
+> required: `false`
+
+Name of branch to push commit to.
+
+#### `repo`
+
+> default: `${{ github.event.repository.name }}`\
+> required: `false`
+
+Repository name.
+
+#### `token`
+
+> default: `${{ github.token }}`\
+> required: `false`
+
+Personal access token (PAT) used to authenticate GitHub API requests.
+
+##### [Required Permissions][2]
+
+- `contents:write`
+
+#### `trailers`
+
+> required: `false`
+
+Newline-delimited list of git trailers.
+
+#### `workspace`
+
+> default: `${{ github.workspace }}`\
+> required: `false`
+
+Path to current working directory.
+
+### Outputs
+
+#### `sha`
+
+SHA of created commit, or an empty string if a commit was not created.
 
 [1]: https://docs.github.com/graphql/reference/mutations#createcommitonbranch
+[2]: https://docs.github.com/actions/using-jobs/assigning-permissions-to-jobs

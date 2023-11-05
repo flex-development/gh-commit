@@ -17,7 +17,9 @@
 # - https://github.com/flex-development/grease
 # - https://github.com/hmarr/debug-action
 # - https://github.com/kaisugi/action-regex-match
+# - https://github.com/mingjun97/file-regex-replace
 # - https://regex101.com/r/OwpOr2
+# - https://regex101.com/r/VIIVGd
 
 ---
 name: release-branch
@@ -100,9 +102,16 @@ jobs:
         env:
           NODE_NO_WARNINGS: 1
         run: yarn build
-      - id: bump
+      - id: bump-manifest
         name: Bump manifest version to ${{ needs.preflight.outputs.version }}
         run: grease bump -w ${{ needs.preflight.outputs.version }}
+      - id: bump-readme
+        name: Bump README version to ${{ needs.preflight.outputs.version }}
+        uses: mingjun97/file-regex-replace@v1
+        with:
+          include: README\.md
+          regex: ${{ vars.README_ACTION_VERSION_REGEX }}
+          replacement: ${{ needs.preflight.outputs.version }}
       - id: changelog
         name: Add CHANGELOG entry for ${{ needs.preflight.outputs.tag }}
         env:
@@ -117,6 +126,10 @@ jobs:
           message: ${{ needs.preflight.outputs.message }}
           token: ${{ steps.bot-token.outputs.token }}
           trailers: 'Signed-off-by: ${{ vars.BOT_NAME }} <${{ vars.BOT_EMAIL }}>'
+      - id: commit-url
+        name: Print commit url
+        run: |
+          echo ${{ format('{0}/{1}/commit/{2}', github.server_url, github.repository, steps.commit.outputs.sha) }}
   pr:
     needs:
       - preflight
