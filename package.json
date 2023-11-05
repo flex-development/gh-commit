@@ -1,7 +1,7 @@
 {
   "name": "@flex-development/gh-commit",
   "description": "Create commits with the GitHub API",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "keywords": [],
   "license": "BSD-3-Clause",
   "homepage": "https://github.com/flex-development/gh-commit",
