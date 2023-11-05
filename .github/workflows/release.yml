@@ -117,6 +117,8 @@ jobs:
         run: yarn pack -o %s-%v.tgz
       - id: release-notes
         name: Generate release notes
+        env:
+          TZ: ${{ vars.TZ }}
         run: grease changelog -wo $NOTES_FILE && echo "$(cat $NOTES_FILE)" >>$GITHUB_STEP_SUMMARY
       - id: tag
         name: Create annotated tag

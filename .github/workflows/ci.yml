@@ -428,4 +428,6 @@ jobs:
         run: echo "$GITHUB_WORKSPACE/$CACHE_PATH/.bin" >>$GITHUB_PATH
       - id: summary
         name: Get changelog preview
+        env:
+          TZ: ${{ vars.TZ }}
         run: echo "$(grease changelog)" >>$GITHUB_STEP_SUMMARY
