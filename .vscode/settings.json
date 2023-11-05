@@ -171,6 +171,7 @@
     "overrideConfigFile": ".eslintrc.cjs"
   },
   "eslint.validate": [
+    "github-actions-workflow",
     "javascript",
     "json",
     "json5",

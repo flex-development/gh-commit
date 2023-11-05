@@ -25,7 +25,7 @@ inputs:
     description: Repository owner
     required: false
   ref:
-    default: ${{ github.head_ref || github.ref }}
+    default: ${{ github.event.workflow_run.head_branch || github.head_ref || github.ref }}
     description: Name of branch to push commit to
     required: false
   repo:
@@ -45,7 +45,7 @@ inputs:
     required: false
 outputs:
   sha:
-    description: SHA of created commit
+    description: SHA of created commit, or an empty string if a commit was not created
 runs:
   main: dist/main.mjs
   using: node20
