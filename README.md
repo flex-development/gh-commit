@@ -46,38 +46,42 @@ interface.
 ### Example Workflow
 
 ```yaml
-# Release Branch
+# Release Chore
 #
-# Execute version bump and changelog operations on release branch creation.
+# Execute branch, version bump, changelog, and pull request operations on release chore commit.
 #
 # References:
 #
 # - https://docs.github.com/actions/learn-github-actions/contexts
 # - https://docs.github.com/actions/learn-github-actions/expressions
-# - https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#create
+# - https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#push
+# - https://docs.github.com/actions/using-workflows/using-github-cli-in-workflows
 # - https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions
-# - https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#create
+# - https://docs.github.com/webhooks-and-events/webhooks/webhook-events-and-payloads#push
 # - https://github.com/actions/checkout
 # - https://github.com/actions/create-github-app-token
+# - https://github.com/actions/github-script
 # - https://github.com/flex-development/grease
 # - https://github.com/hmarr/debug-action
 # - https://github.com/kaisugi/action-regex-match
 # - https://regex101.com/r/OwpOr2
+# - https://regex101.com/r/VIIVGd
 
 ---
-name: release-branch
-on: create
+name: release-chore
+on:
+  push:
+    branches:
+      - main
 concurrency:
   cancel-in-progress: true
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   preflight:
-    if: |
-      github.ref_type == 'branch' &&
-      startsWith(github.ref_name, 'release/') &&
-      contains(vars.MAINTAINERS, github.actor)
+    if: startsWith(github.event.head_commit.message, 'release(chore):')
     runs-on: ubuntu-latest
     outputs:
+      branch: ${{ steps.branch.outputs.result }}
       message: ${{ steps.message.outputs.result }}
       tag: ${{ steps.tag.outputs.result }}
       version: ${{ steps.version.outputs.match }}
@@ -85,6 +89,12 @@ jobs:
       - id: debug
         name: Print environment variables and event payload
         uses: hmarr/debug-action@v2.1.0
+      - id: fail-actor
+        if: contains(vars.MAINTAINERS, github.actor) == false
+        name: Fail on unauthorized actor
+        run: |
+          echo '**Unauthorized actor: ${{ github.actor }}**' >>$GITHUB_STEP_SUMMARY
+          exit 1
       - id: checkout
         name: Checkout ${{ github.ref_name }}
         uses: actions/checkout@v4.1.1
@@ -95,18 +105,51 @@ jobs:
         name: Get release version
         uses: kaisugi/action-regex-match@v1.0.0
         with:
-          regex: ${{ vars.RELEASE_BRANCH_REGEX }}
-          text: ${{ github.ref_name }}
+          regex: ${{ vars.RELEASE_CHORE_REGEX }}
+          text: ${{ github.event.head_commit.message }}
+      - id: fail-version
+        if: steps.version.outputs.match == ''
+        name: Fail on invalid release version
+        run: |
+          ERR='**Invalid release chore commit: `${{ github.event.head_commit.message }}`**
+          Message must match [`${{ vars.RELEASE_CHORE_REGEX }}`](https://regex101.com/r/OwpOr2)'
+          echo "$ERR" >>$GITHUB_STEP_SUMMARY
+          exit 1
       - id: tag
         name: Get release tag
         run: |
           echo "result=$(jq .tagprefix grease.config.json -r)${{ steps.version.outputs.match }}" >>$GITHUB_OUTPUT
       - id: message
         name: Get release message
-        run: |
-          echo "result=release: ${{ steps.tag.outputs.result }}" >>$GITHUB_OUTPUT
-  prepare:
+        run: 'echo "result=release: ${{ steps.tag.outputs.result }}" >>$GITHUB_OUTPUT'
+      - id: branch
+        name: Get release branch name
+        run: echo "result=release/${{ steps.version.outputs.match }}" >>$GITHUB_OUTPUT
+  branch:
     needs: preflight
+    runs-on: ubuntu-latest
+    steps:
+      - id: bot-token
+        name: Get bot token
+        uses: actions/create-github-app-token@v1.5.1
+        with:
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+      - id: checkout
+        name: Checkout ${{ github.ref_name }}
+        uses: actions/checkout@v4.1.1
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ steps.bot-token.outputs.token }}
+      - id: branch
+        name: Create and push branch ${{ needs.preflight.outputs.branch }}
+        run: |
+          git branch ${{ needs.preflight.outputs.branch }}
+          git push origin --no-verify ${{ needs.preflight.outputs.branch }}
+  prepare:
+    needs:
+      - branch
+      - preflight
     permissions:
       packages: read
     runs-on: ubuntu-latest
@@ -120,12 +163,12 @@ jobs:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_PRIVATE_KEY }}
       - id: checkout
-        name: Checkout ${{ github.ref_name }}
+        name: Checkout ${{ needs.preflight.outputs.branch }}
         uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ github.ref }}
+          ref: ${{ needs.preflight.outputs.branch }}
           token: ${{ steps.bot-token.outputs.token }}
       - id: yarn
         name: Install dependencies
@@ -137,11 +180,29 @@ jobs:
         env:
           NODE_NO_WARNINGS: 1
         run: yarn build
-      - id: bump
+      - id: bump-manifest
         name: Bump manifest version to ${{ needs.preflight.outputs.version }}
         run: grease bump -w ${{ needs.preflight.outputs.version }}
+      - id: bump-readme
+        name: Bump README version to ${{ needs.preflight.outputs.version }}
+        uses: actions/github-script@v6.4.1
+        with:
+          github-token: ${{ steps.bot-token.outputs.token }}
+          script: |
+            const fs = require('fs')
+
+            const path = 'README.md'
+            const regex = new RegExp('${{ vars.README_ACTION_VERSION_REGEX }}')
+
+            let content = fs.readFileSync(path, 'utf8')
+            content = content.replace(regex, '${{ needs.preflight.outputs.version }}')
+
+            fs.writeFileSync(path, content)
+            process.stdout.write(content)
       - id: changelog
         name: Add CHANGELOG entry for ${{ needs.preflight.outputs.tag }}
+        env:
+          TZ: ${{ vars.TZ }}
         run: |
           echo "$(grease changelog)" >>$GITHUB_STEP_SUMMARY
           grease changelog -sw
@@ -150,6 +211,7 @@ jobs:
         uses: flex-development/gh-commit@0.0.0
         with:
           message: ${{ needs.preflight.outputs.message }}
+          ref: ${{ needs.preflight.outputs.branch }}
           token: ${{ steps.bot-token.outputs.token }}
           trailers: 'Signed-off-by: ${{ vars.BOT_NAME }} <${{ vars.BOT_EMAIL }}>'
       - id: commit-url
@@ -157,7 +219,7 @@ jobs:
         run: echo ${{ format('{0}/{1}/commit/{2}', github.server_url, github.repository, steps.commit.outputs.sha) }}
 ```
 
-> See [`release-branch.yml`](.github/workflows/release-branch.yml) for a more robust example.
+> See [`release-chore.yml`](.github/workflows/release-chore.yml) for a more robust example.
 
 ### Inputs
 
