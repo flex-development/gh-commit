@@ -208,7 +208,7 @@ jobs:
           grease changelog -sw
       - id: commit
         name: Commit and push release preparation
-        uses: flex-development/gh-commit@0.0.0
+        uses: flex-development/gh-commit@1.0.0
         with:
           message: ${{ needs.preflight.outputs.message }}
           ref: ${{ needs.preflight.outputs.branch }}
