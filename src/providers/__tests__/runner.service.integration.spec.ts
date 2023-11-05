@@ -57,16 +57,6 @@ describe('integration:providers/RunnerService', () => {
     let execute: Spy<CommandBus['execute']>
     let setOutput: Spy<(typeof core)['setOutput']>
 
-    // afterAll(async () => {
-    //   await git(['branch', '--delete', ref])
-    //   await git(['push', 'origin', '--no-verify', '--delete', ref])
-    // })
-
-    // beforeAll(async () => {
-    //   await git(['branch', ref])
-    //   await git(['push', 'origin', '--no-verify', ref])
-    // })
-
     beforeEach(async () => {
       execute = vi.spyOn(CommandBus.prototype, 'execute')
       setOutput = vi.spyOn(core, 'setOutput').mockImplementationOnce(noop)
