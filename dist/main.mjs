@@ -79897,7 +79897,7 @@ var commit_command_default = CommitCommand;
 // package.json
 var package_default = {
   name: "@flex-development/gh-commit",
-  version: "0.0.0"
+  version: "1.0.0"
 };
 
 // src/commands/commit.handler.ts
