@@ -1182,7 +1182,7 @@ __metadata:
     "@flex-development/commitlint-config": "npm:1.0.1"
     "@flex-development/decorator-regex": "npm:2.0.0"
     "@flex-development/esm-types": "npm:2.0.0"
-    "@flex-development/grease": "npm:3.0.0-alpha.4"
+    "@flex-development/grease": "npm:3.0.0-alpha.9"
     "@flex-development/mkbuild": "npm:1.0.0-alpha.23"
     "@flex-development/mlly": "npm:1.0.0-alpha.18"
     "@flex-development/pathe": "npm:2.0.0"
@@ -1247,9 +1247,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@flex-development/grease@npm:3.0.0-alpha.4":
-  version: 3.0.0-alpha.4
-  resolution: "@flex-development/grease@npm:3.0.0-alpha.4::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40flex-development%2Fgrease%2F3.0.0-alpha.4%2F0514a19eb56fe66231b93a824e944840f6a7930d"
+"@flex-development/grease@npm:3.0.0-alpha.9":
+  version: 3.0.0-alpha.9
+  resolution: "@flex-development/grease@npm:3.0.0-alpha.9::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40flex-development%2Fgrease%2F3.0.0-alpha.9%2Fc51045c420be8ba7eae41952bf9f721cfd6429cb"
   dependencies:
     "@flex-development/aggregate-error-ponyfill": "npm:3.1.1"
     "@flex-development/commitlint-config": "npm:1.0.1"
@@ -1277,7 +1277,7 @@ __metadata:
     word-wrap: "npm:1.2.5"
   bin:
     grease: dist/cli.mjs
-  checksum: 7f32063610a1da8b40d018fb01922775943ee6fc603990d5a2f7d56cd773fc72f450be50d901da0cfea0175ebcaac8b52d4f7571b26af3b2a05f3d2e43fbeb23
+  checksum: 24475dae8e003094b5a32c8082d5284c66b44781d82741e9c6e83eafd191a124be41f52256cf55d9305b77b46c111a63b903a5e4892dd35faa99a109a73b1060
   languageName: node
   linkType: hard
 
