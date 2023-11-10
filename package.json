@@ -118,7 +118,7 @@
     "is-ci": "3.0.1",
     "jsonc-eslint-parser": "2.4.0",
     "lint-staged": "15.0.2",
-    "msw": "2.0.4",
+    "msw": "2.0.5",
     "node-notifier": "10.0.1",
     "prettier": "3.0.3",
     "reflect-metadata": "0.1.13",
