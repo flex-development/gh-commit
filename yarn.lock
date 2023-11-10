@@ -1231,7 +1231,7 @@ __metadata:
     is-ci: "npm:3.0.1"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:15.0.2"
-    msw: "npm:2.0.4"
+    msw: "npm:2.0.5"
     node-notifier: "npm:10.0.1"
     prettier: "npm:3.0.3"
     reflect-metadata: "npm:0.1.13"
@@ -1652,7 +1652,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/interceptors@npm:^0.25.10":
+"@mswjs/interceptors@npm:^0.25.11":
   version: 0.25.11
   resolution: "@mswjs/interceptors@npm:0.25.11"
   dependencies:
@@ -6723,15 +6723,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:2.0.4":
-  version: 2.0.4
-  resolution: "msw@npm:2.0.4"
+"msw@npm:2.0.5":
+  version: 2.0.5
+  resolution: "msw@npm:2.0.5"
   dependencies:
     "@bundled-es-modules/cookie": "npm:^2.0.0"
     "@bundled-es-modules/js-levenshtein": "npm:^2.0.1"
     "@bundled-es-modules/statuses": "npm:^1.0.1"
     "@mswjs/cookies": "npm:^1.1.0"
-    "@mswjs/interceptors": "npm:^0.25.10"
+    "@mswjs/interceptors": "npm:^0.25.11"
     "@open-draft/until": "npm:^2.1.0"
     "@types/cookie": "npm:^0.4.1"
     "@types/js-levenshtein": "npm:^1.1.1"
@@ -6756,7 +6756,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 8dd46ee7b88046f13f51adfffcd38cbb0f557c19bb68ec584e11e1c7b6453a41eed44848b612b98b1153b60e7c575ab1630ab8bcec93080698dd02c17113d372
+  checksum: 573d8dc11ac94d7e28a6b568a2c563f39fd468b37572979205d0fe7056137fe80fc0a9c3963301741bae0b73fcfd5edc61990f745a270a676e6b8ea195d020ac
   languageName: node
   linkType: hard
 
