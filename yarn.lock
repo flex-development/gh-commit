@@ -1240,7 +1240,7 @@ __metadata:
     trash-cli: "npm:5.0.0"
     ts-dedent: "npm:2.2.0"
     typescript: "npm:5.2.2"
-    vite: "npm:5.0.0-beta.17"
+    vite: "npm:5.0.0-beta.18"
     vite-tsconfig-paths: "npm:4.2.1"
     vitest: "npm:1.0.0-beta.4"
     yaml-eslint-parser: "npm:1.2.2"
@@ -8899,7 +8899,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:5.0.0-beta.17, vite@npm:^3.0.0 || ^4.0.0 || ^5.0.0-0, vite@npm:^3.1.0 || ^4.0.0 || ^5.0.0-0":
+"vite@npm:5.0.0-beta.18":
+  version: 5.0.0-beta.18
+  resolution: "vite@npm:5.0.0-beta.18"
+  dependencies:
+    esbuild: "npm:^0.19.3"
+    fsevents: "npm:~2.3.3"
+    postcss: "npm:^8.4.31"
+    rollup: "npm:^4.2.0"
+  peerDependencies:
+    "@types/node": ^18.0.0 || >=20.0.0
+    less: "*"
+    lightningcss: ^1.21.0
+    sass: "*"
+    stylus: "*"
+    sugarss: "*"
+    terser: ^5.4.0
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+    less:
+      optional: true
+    lightningcss:
+      optional: true
+    sass:
+      optional: true
+    stylus:
+      optional: true
+    sugarss:
+      optional: true
+    terser:
+      optional: true
+  bin:
+    vite: bin/vite.js
+  checksum: ed5a481cd0ab69a6dc6f7d6076c416e0fb371f8b40f396e98f717a2ac60ad2839607a39797b81cbd0389f988c86e734c27d29abdef37bbca59b633cb484f099f
+  languageName: node
+  linkType: hard
+
+"vite@npm:^3.0.0 || ^4.0.0 || ^5.0.0-0, vite@npm:^3.1.0 || ^4.0.0 || ^5.0.0-0":
   version: 5.0.0-beta.17
   resolution: "vite@npm:5.0.0-beta.17"
   dependencies:
