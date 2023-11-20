@@ -1231,7 +1231,7 @@ __metadata:
     is-ci: "npm:3.0.1"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:15.1.0"
-    msw: "npm:2.0.7"
+    msw: "npm:2.0.8"
     node-notifier: "npm:10.0.1"
     prettier: "npm:3.1.0"
     reflect-metadata: "npm:0.1.13"
@@ -6740,9 +6740,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:2.0.7":
-  version: 2.0.7
-  resolution: "msw@npm:2.0.7"
+"msw@npm:2.0.8":
+  version: 2.0.8
+  resolution: "msw@npm:2.0.8"
   dependencies:
     "@bundled-es-modules/cookie": "npm:^2.0.0"
     "@bundled-es-modules/js-levenshtein": "npm:^2.0.1"
@@ -6760,7 +6760,6 @@ __metadata:
     inquirer: "npm:^8.2.0"
     is-node-process: "npm:^1.2.0"
     js-levenshtein: "npm:^1.1.6"
-    node-fetch: "npm:^2.6.7"
     outvariant: "npm:^1.4.0"
     path-to-regexp: "npm:^6.2.0"
     strict-event-emitter: "npm:^0.5.0"
@@ -6773,7 +6772,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 8c11fdee2e972df847132b12aa1dc9f1d4811e79bbeaaf6be31d23033c180d47145e824ee7439b173b9596c7649f6d0af0b6291ccd54742206f98a829682da3a
+  checksum: fdcc44c57f7739d746a5333bf1fb0c7aa68ec8fc49596cdf8f83f2fd31463fb0206caa6b0395cc76fe84c2f594df68c1a72a323aa1b72196af3ff6ca40830cae
   languageName: node
   linkType: hard
 
@@ -6819,7 +6818,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.7":
+"node-fetch@npm:^2.6.1":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
