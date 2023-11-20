@@ -1194,7 +1194,7 @@ __metadata:
     "@nestjs/cqrs": "npm:10.2.6"
     "@nestjs/testing": "npm:10.2.8"
     "@octokit/core": "npm:5.0.1"
-    "@octokit/graphql-schema": "npm:14.41.0"
+    "@octokit/graphql-schema": "npm:14.42.0"
     "@types/chai": "npm:4.3.9"
     "@types/eslint": "npm:8.44.6"
     "@types/is-ci": "npm:3.0.3"
@@ -1866,13 +1866,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/graphql-schema@npm:14.41.0":
-  version: 14.41.0
-  resolution: "@octokit/graphql-schema@npm:14.41.0"
+"@octokit/graphql-schema@npm:14.42.0":
+  version: 14.42.0
+  resolution: "@octokit/graphql-schema@npm:14.42.0"
   dependencies:
     graphql: "npm:^16.0.0"
     graphql-tag: "npm:^2.10.3"
-  checksum: 9ce7ecf5bbff0b8998290c02fe429567754b73b9091ce4fad44e543e024220fe1b7a861712796d8120d129078049172ae499451850bbd09d7d79c73611569f84
+  checksum: 8ccd2852b3e8dbcfbed168e85e2690969a71c05e216626be88d53f9c44b4fa3586ebc3c629ded6c57c7a2af37c52b593ec0765a6acdbe5af1a650006d3ebedac
   languageName: node
   linkType: hard
 
