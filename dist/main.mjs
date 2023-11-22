@@ -25570,9 +25570,9 @@ var require_noop = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.noop = void 0;
-    function noop() {
+    function noop3() {
     }
-    exports.noop = noop;
+    exports.noop = noop3;
   }
 });
 
@@ -37695,18 +37695,18 @@ var require_silent_logger = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SilentLogger = void 0;
     var common_1 = require_common();
-    var noop = () => {
+    var noop3 = () => {
     };
     var SilentLogger = class extends common_1.Logger {
       constructor() {
         super(...arguments);
-        this.log = noop;
-        this.error = noop;
-        this.warn = noop;
-        this.debug = noop;
-        this.verbose = noop;
-        this.fatal = noop;
-        this.setLogLevels = noop;
+        this.log = noop3;
+        this.error = noop3;
+        this.warn = noop3;
+        this.debug = noop3;
+        this.verbose = noop3;
+        this.fatal = noop3;
+        this.setLogLevels = noop3;
       }
     };
     exports.SilentLogger = SilentLogger;
@@ -39424,12 +39424,12 @@ var require_request_providers = __commonJS({
     exports.requestProvider = void 0;
     var common_1 = require_common();
     var request_constants_1 = require_request_constants();
-    var noop = () => {
+    var noop3 = () => {
     };
     exports.requestProvider = {
       provide: request_constants_1.REQUEST,
       scope: common_1.Scope.REQUEST,
-      useFactory: noop
+      useFactory: noop3
     };
   }
 });
@@ -39452,12 +39452,12 @@ var require_inquirer_providers = __commonJS({
     exports.inquirerProvider = void 0;
     var common_1 = require_common();
     var inquirer_constants_1 = require_inquirer_constants();
-    var noop = () => {
+    var noop3 = () => {
     };
     exports.inquirerProvider = {
       provide: inquirer_constants_1.INQUIRER,
       scope: common_1.Scope.TRANSIENT,
-      useFactory: noop
+      useFactory: noop3
     };
   }
 });
@@ -43491,10 +43491,10 @@ var require_noop_graph_inspector = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.NoopGraphInspector = void 0;
     var graph_inspector_1 = require_graph_inspector();
-    var noop = () => {
+    var noop3 = () => {
     };
     exports.NoopGraphInspector = new Proxy(graph_inspector_1.GraphInspector.prototype, {
-      get: () => noop
+      get: () => noop3
     });
   }
 });
@@ -70845,7 +70845,7 @@ var dist_web_exports = {};
 __export(dist_web_exports, {
   Octokit: () => Octokit2
 });
-var import_before_after_hook2, VERSION8, Octokit2;
+var import_before_after_hook2, VERSION8, noop2, consoleWarn2, consoleError2, userAgentTrail2, Octokit2;
 var init_dist_web4 = __esm({
   "node_modules/@actions/github/node_modules/@octokit/core/dist-web/index.js"() {
     init_dist_web();
@@ -70853,7 +70853,12 @@ var init_dist_web4 = __esm({
     init_dist_src3();
     init_dist_web3();
     init_dist_src4();
-    VERSION8 = "5.0.1";
+    VERSION8 = "5.0.2";
+    noop2 = () => {
+    };
+    consoleWarn2 = console.warn.bind(console);
+    consoleError2 = console.error.bind(console);
+    userAgentTrail2 = `octokit-core.js/${VERSION8} ${getUserAgent2()}`;
     Octokit2 = class {
       static {
         this.VERSION = VERSION8;
@@ -70914,10 +70919,7 @@ var init_dist_web4 = __esm({
             format: ""
           }
         };
-        requestDefaults.headers["user-agent"] = [
-          options.userAgent,
-          `octokit-core.js/${VERSION8} ${getUserAgent2()}`
-        ].filter(Boolean).join(" ");
+        requestDefaults.headers["user-agent"] = options.userAgent ? `${options.userAgent} ${userAgentTrail2}` : userAgentTrail2;
         if (options.baseUrl) {
           requestDefaults.baseUrl = options.baseUrl;
         }
@@ -70931,12 +70933,10 @@ var init_dist_web4 = __esm({
         this.graphql = withCustomRequest2(this.request).defaults(requestDefaults);
         this.log = Object.assign(
           {
-            debug: () => {
-            },
-            info: () => {
-            },
-            warn: console.warn.bind(console),
-            error: console.error.bind(console)
+            debug: noop2,
+            info: noop2,
+            warn: consoleWarn2,
+            error: consoleError2
           },
           options.log
         );
@@ -70973,9 +70973,9 @@ var init_dist_web4 = __esm({
           this.auth = auth3;
         }
         const classConstructor = this.constructor;
-        classConstructor.plugins.forEach((plugin) => {
-          Object.assign(this, plugin(this, options));
-        });
+        for (let i = 0; i < classConstructor.plugins.length; ++i) {
+          Object.assign(this, classConstructor.plugins[i](this, options));
+        }
       }
     };
   }
@@ -74572,7 +74572,12 @@ var createTokenAuth = function createTokenAuth2(token) {
 };
 
 // node_modules/@octokit/core/dist-web/index.js
-var VERSION4 = "5.0.1";
+var VERSION4 = "5.0.2";
+var noop = () => {
+};
+var consoleWarn = console.warn.bind(console);
+var consoleError = console.error.bind(console);
+var userAgentTrail = `octokit-core.js/${VERSION4} ${getUserAgent()}`;
 var Octokit = class {
   static {
     this.VERSION = VERSION4;
@@ -74633,10 +74638,7 @@ var Octokit = class {
         format: ""
       }
     };
-    requestDefaults.headers["user-agent"] = [
-      options.userAgent,
-      `octokit-core.js/${VERSION4} ${getUserAgent()}`
-    ].filter(Boolean).join(" ");
+    requestDefaults.headers["user-agent"] = options.userAgent ? `${options.userAgent} ${userAgentTrail}` : userAgentTrail;
     if (options.baseUrl) {
       requestDefaults.baseUrl = options.baseUrl;
     }
@@ -74650,12 +74652,10 @@ var Octokit = class {
     this.graphql = withCustomRequest(this.request).defaults(requestDefaults);
     this.log = Object.assign(
       {
-        debug: () => {
-        },
-        info: () => {
-        },
-        warn: console.warn.bind(console),
-        error: console.error.bind(console)
+        debug: noop,
+        info: noop,
+        warn: consoleWarn,
+        error: consoleError
       },
       options.log
     );
@@ -74692,9 +74692,9 @@ var Octokit = class {
       this.auth = auth3;
     }
     const classConstructor = this.constructor;
-    classConstructor.plugins.forEach((plugin) => {
-      Object.assign(this, plugin(this, options));
-    });
+    for (let i = 0; i < classConstructor.plugins.length; ++i) {
+      Object.assign(this, classConstructor.plugins[i](this, options));
+    }
   }
 };
 
