@@ -95,7 +95,7 @@
     "chai": "5.0.0-alpha.2",
     "cross-env": "7.0.3",
     "cspell": "8.0.0",
-    "dprint": "0.42.5",
+    "dprint": "0.43.0",
     "editorconfig": "2.0.0",
     "esbuild": "0.19.7",
     "eslint": "8.54.0",
