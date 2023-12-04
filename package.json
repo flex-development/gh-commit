@@ -98,7 +98,7 @@
     "dprint": "0.43.1",
     "editorconfig": "2.0.0",
     "esbuild": "0.19.8",
-    "eslint": "8.54.0",
+    "eslint": "8.55.0",
     "eslint-import-resolver-typescript": "3.6.1",
     "eslint-plugin-chai-expect": "3.0.0",
     "eslint-plugin-import": "2.27.5",
