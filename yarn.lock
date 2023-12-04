@@ -1412,7 +1412,7 @@ __metadata:
     is-ci: "npm:3.0.1"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:15.1.0"
-    msw: "npm:2.0.9"
+    msw: "npm:2.0.10"
     node-notifier: "npm:10.0.1"
     prettier: "npm:3.1.0"
     reflect-metadata: "npm:0.1.13"
@@ -1833,9 +1833,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/interceptors@npm:^0.25.11":
-  version: 0.25.11
-  resolution: "@mswjs/interceptors@npm:0.25.11"
+"@mswjs/interceptors@npm:^0.25.13":
+  version: 0.25.13
+  resolution: "@mswjs/interceptors@npm:0.25.13"
   dependencies:
     "@open-draft/deferred-promise": "npm:^2.2.0"
     "@open-draft/logger": "npm:^0.3.0"
@@ -1843,7 +1843,7 @@ __metadata:
     is-node-process: "npm:^1.2.0"
     outvariant: "npm:^1.2.1"
     strict-event-emitter: "npm:^0.5.1"
-  checksum: 04d9dae107d6731f715e85604707abb24bb62b3606110f2923b80c2ce92d2af900aecee9686edeb0bc20585305486c30b1ffbb0374e7fd144125b9117bef9594
+  checksum: 458990b881067798575d93dc9dda26819d9b568992cd5c2eaa96005b9abd078a4b7195d108aee3a30edcee9695d4ec3ab72b0cc15dc579b9bda1c8b9537b5987
   languageName: node
   linkType: hard
 
@@ -7013,15 +7013,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:2.0.9":
-  version: 2.0.9
-  resolution: "msw@npm:2.0.9"
+"msw@npm:2.0.10":
+  version: 2.0.10
+  resolution: "msw@npm:2.0.10"
   dependencies:
     "@bundled-es-modules/cookie": "npm:^2.0.0"
     "@bundled-es-modules/js-levenshtein": "npm:^2.0.1"
     "@bundled-es-modules/statuses": "npm:^1.0.1"
     "@mswjs/cookies": "npm:^1.1.0"
-    "@mswjs/interceptors": "npm:^0.25.11"
+    "@mswjs/interceptors": "npm:^0.25.13"
     "@open-draft/until": "npm:^2.1.0"
     "@types/cookie": "npm:^0.4.1"
     "@types/js-levenshtein": "npm:^1.1.1"
@@ -7045,7 +7045,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 9e3ad10fd11924a381f1992496ed0b3710baa230a77dcc2e5857ba55d47cebe794c1106fb1af80c8b772837bf51e389e0e67badaa35f075bbbebc457747b0143
+  checksum: b5839ee6ff3f2335f497b33a10275759bdd77b29ff6d262ba1b972c2d362ee4574c9ea4bfa3ed9f842c7b498117d22d8e9f04d067baad0eea060f0fe19bd1778
   languageName: node
   linkType: hard
 
