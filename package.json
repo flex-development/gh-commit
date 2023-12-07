@@ -92,7 +92,7 @@
     "@vates/toggle-scripts": "1.0.0",
     "@vitest/coverage-v8": "1.0.1",
     "@vitest/expect": "1.0.1",
-    "chai": "5.0.0-alpha.2",
+    "chai": "5.0.0-rc.0",
     "cross-env": "7.0.3",
     "cspell": "8.0.0",
     "dprint": "0.43.2",
@@ -133,7 +133,7 @@
     "yaml-eslint-parser": "1.2.2"
   },
   "resolutions": {
-    "chai": "5.0.0-alpha.2",
+    "chai": "5.0.0-rc.0",
     "loupe": "3.0.1"
   },
   "engines": {
