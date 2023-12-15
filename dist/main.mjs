@@ -18730,24 +18730,38 @@ var require_Reflect = __commonJS({
     var Reflect2;
     (function(Reflect3) {
       (function(factory) {
-        var root = typeof global === "object" ? global : typeof self === "object" ? self : typeof this === "object" ? this : Function("return this;")();
+        var root = typeof globalThis === "object" ? globalThis : typeof global === "object" ? global : typeof self === "object" ? self : typeof this === "object" ? this : sloppyModeThis();
         var exporter = makeExporter(Reflect3);
-        if (typeof root.Reflect === "undefined") {
-          root.Reflect = Reflect3;
-        } else {
+        if (typeof root.Reflect !== "undefined") {
           exporter = makeExporter(root.Reflect, exporter);
         }
-        factory(exporter);
+        factory(exporter, root);
+        if (typeof root.Reflect === "undefined") {
+          root.Reflect = Reflect3;
+        }
         function makeExporter(target, previous) {
           return function(key, value) {
-            if (typeof target[key] !== "function") {
-              Object.defineProperty(target, key, { configurable: true, writable: true, value });
-            }
+            Object.defineProperty(target, key, { configurable: true, writable: true, value });
             if (previous)
               previous(key, value);
           };
         }
-      })(function(exporter) {
+        function functionThis() {
+          try {
+            return Function("return this;")();
+          } catch (_) {
+          }
+        }
+        function indirectEvalThis() {
+          try {
+            return (void 0, eval)("(function() { return this; })()");
+          } catch (_) {
+          }
+        }
+        function sloppyModeThis() {
+          return functionThis() || indirectEvalThis();
+        }
+      })(function(exporter, root) {
         var hasOwn4 = Object.prototype.hasOwnProperty;
         var supportsSymbol = typeof Symbol === "function";
         var toPrimitiveSymbol = supportsSymbol && typeof Symbol.toPrimitive !== "undefined" ? Symbol.toPrimitive : "@@toPrimitive";
@@ -18776,11 +18790,12 @@ var require_Reflect = __commonJS({
           }
         };
         var functionPrototype = Object.getPrototypeOf(Function);
-        var usePolyfill = typeof process === "object" && process["env"] && process["env"]["REFLECT_METADATA_USE_MAP_POLYFILL"] === "true";
-        var _Map = !usePolyfill && typeof Map === "function" && typeof Map.prototype.entries === "function" ? Map : CreateMapPolyfill();
-        var _Set = !usePolyfill && typeof Set === "function" && typeof Set.prototype.entries === "function" ? Set : CreateSetPolyfill();
-        var _WeakMap = !usePolyfill && typeof WeakMap === "function" ? WeakMap : CreateWeakMapPolyfill();
-        var Metadata = new _WeakMap();
+        var _Map = typeof Map === "function" && typeof Map.prototype.entries === "function" ? Map : CreateMapPolyfill();
+        var _Set = typeof Set === "function" && typeof Set.prototype.entries === "function" ? Set : CreateSetPolyfill();
+        var _WeakMap = typeof WeakMap === "function" ? WeakMap : CreateWeakMapPolyfill();
+        var registrySymbol = supportsSymbol ? Symbol.for("@reflect-metadata:registry") : void 0;
+        var metadataRegistry = GetOrCreateMetadataRegistry();
+        var metadataProvider = CreateMetadataProvider(metadataRegistry);
         function decorate2(decorators, target, propertyKey, attributes) {
           if (!IsUndefined(propertyKey)) {
             if (!IsArray(decorators))
@@ -18874,24 +18889,19 @@ var require_Reflect = __commonJS({
             throw new TypeError();
           if (!IsUndefined(propertyKey))
             propertyKey = ToPropertyKey(propertyKey);
-          var metadataMap = GetOrCreateMetadataMap(
+          if (!IsObject(target))
+            throw new TypeError();
+          if (!IsUndefined(propertyKey))
+            propertyKey = ToPropertyKey(propertyKey);
+          var provider = GetMetadataProvider(
             target,
             propertyKey,
             /*Create*/
             false
           );
-          if (IsUndefined(metadataMap))
+          if (IsUndefined(provider))
             return false;
-          if (!metadataMap.delete(metadataKey))
-            return false;
-          if (metadataMap.size > 0)
-            return true;
-          var targetMetadata = Metadata.get(target);
-          targetMetadata.delete(propertyKey);
-          if (targetMetadata.size > 0)
-            return true;
-          Metadata.delete(target);
-          return true;
+          return provider.OrdinaryDeleteMetadata(metadataKey, target, propertyKey);
         }
         exporter("deleteMetadata", deleteMetadata);
         function DecorateConstructor(decorators, target) {
@@ -18918,23 +18928,6 @@ var require_Reflect = __commonJS({
           }
           return descriptor3;
         }
-        function GetOrCreateMetadataMap(O, P, Create) {
-          var targetMetadata = Metadata.get(O);
-          if (IsUndefined(targetMetadata)) {
-            if (!Create)
-              return void 0;
-            targetMetadata = new _Map();
-            Metadata.set(O, targetMetadata);
-          }
-          var metadataMap = targetMetadata.get(P);
-          if (IsUndefined(metadataMap)) {
-            if (!Create)
-              return void 0;
-            metadataMap = new _Map();
-            targetMetadata.set(P, metadataMap);
-          }
-          return metadataMap;
-        }
         function OrdinaryHasMetadata(MetadataKey, O, P) {
           var hasOwn5 = OrdinaryHasOwnMetadata(MetadataKey, O, P);
           if (hasOwn5)
@@ -18945,15 +18938,15 @@ var require_Reflect = __commonJS({
           return false;
         }
         function OrdinaryHasOwnMetadata(MetadataKey, O, P) {
-          var metadataMap = GetOrCreateMetadataMap(
+          var provider = GetMetadataProvider(
             O,
             P,
             /*Create*/
             false
           );
-          if (IsUndefined(metadataMap))
+          if (IsUndefined(provider))
             return false;
-          return ToBoolean(metadataMap.has(MetadataKey));
+          return ToBoolean(provider.OrdinaryHasOwnMetadata(MetadataKey, O, P));
         }
         function OrdinaryGetMetadata(MetadataKey, O, P) {
           var hasOwn5 = OrdinaryHasOwnMetadata(MetadataKey, O, P);
@@ -18965,24 +18958,24 @@ var require_Reflect = __commonJS({
           return void 0;
         }
         function OrdinaryGetOwnMetadata(MetadataKey, O, P) {
-          var metadataMap = GetOrCreateMetadataMap(
+          var provider = GetMetadataProvider(
             O,
             P,
             /*Create*/
             false
           );
-          if (IsUndefined(metadataMap))
-            return void 0;
-          return metadataMap.get(MetadataKey);
+          if (IsUndefined(provider))
+            return;
+          return provider.OrdinaryGetOwnMetadata(MetadataKey, O, P);
         }
         function OrdinaryDefineOwnMetadata(MetadataKey, MetadataValue, O, P) {
-          var metadataMap = GetOrCreateMetadataMap(
+          var provider = GetMetadataProvider(
             O,
             P,
             /*Create*/
             true
           );
-          metadataMap.set(MetadataKey, MetadataValue);
+          provider.OrdinaryDefineOwnMetadata(MetadataKey, MetadataValue, O, P);
         }
         function OrdinaryMetadataKeys(O, P) {
           var ownKeys = OrdinaryOwnMetadataKeys(O, P);
@@ -19015,36 +19008,16 @@ var require_Reflect = __commonJS({
           return keys;
         }
         function OrdinaryOwnMetadataKeys(O, P) {
-          var keys = [];
-          var metadataMap = GetOrCreateMetadataMap(
+          var provider = GetMetadataProvider(
             O,
             P,
-            /*Create*/
+            /*create*/
             false
           );
-          if (IsUndefined(metadataMap))
-            return keys;
-          var keysObj = metadataMap.keys();
-          var iterator2 = GetIterator(keysObj);
-          var k = 0;
-          while (true) {
-            var next = IteratorStep(iterator2);
-            if (!next) {
-              keys.length = k;
-              return keys;
-            }
-            var nextValue = IteratorValue(next);
-            try {
-              keys[k] = nextValue;
-            } catch (e) {
-              try {
-                IteratorClose(iterator2);
-              } finally {
-                throw e;
-              }
-            }
-            k++;
+          if (!provider) {
+            return [];
           }
+          return provider.OrdinaryOwnMetadataKeys(O, P);
         }
         function Type(x) {
           if (x === null)
@@ -19168,6 +19141,9 @@ var require_Reflect = __commonJS({
               return false;
           }
         }
+        function SameValueZero(x, y) {
+          return x === y || x !== x && y !== y;
+        }
         function GetMethod(V, P) {
           var func = V[P];
           if (func === void 0 || func === null)
@@ -19213,6 +19189,303 @@ var require_Reflect = __commonJS({
           if (constructor === O)
             return proto;
           return constructor;
+        }
+        function CreateMetadataRegistry() {
+          var fallback2;
+          if (!IsUndefined(registrySymbol) && typeof root.Reflect !== "undefined" && !(registrySymbol in root.Reflect) && typeof root.Reflect.defineMetadata === "function") {
+            fallback2 = CreateFallbackProvider(root.Reflect);
+          }
+          var first;
+          var second;
+          var rest;
+          var targetProviderMap = new _WeakMap();
+          var registry = {
+            registerProvider,
+            getProvider,
+            setProvider
+          };
+          return registry;
+          function registerProvider(provider) {
+            if (!Object.isExtensible(registry)) {
+              throw new Error("Cannot add provider to a frozen registry.");
+            }
+            switch (true) {
+              case fallback2 === provider:
+                break;
+              case IsUndefined(first):
+                first = provider;
+                break;
+              case first === provider:
+                break;
+              case IsUndefined(second):
+                second = provider;
+                break;
+              case second === provider:
+                break;
+              default:
+                if (rest === void 0)
+                  rest = new _Set();
+                rest.add(provider);
+                break;
+            }
+          }
+          function getProviderNoCache(O, P) {
+            if (!IsUndefined(first)) {
+              if (first.isProviderFor(O, P))
+                return first;
+              if (!IsUndefined(second)) {
+                if (second.isProviderFor(O, P))
+                  return first;
+                if (!IsUndefined(rest)) {
+                  var iterator2 = GetIterator(rest);
+                  while (true) {
+                    var next = IteratorStep(iterator2);
+                    if (!next) {
+                      return void 0;
+                    }
+                    var provider = IteratorValue(next);
+                    if (provider.isProviderFor(O, P)) {
+                      IteratorClose(iterator2);
+                      return provider;
+                    }
+                  }
+                }
+              }
+            }
+            if (!IsUndefined(fallback2) && fallback2.isProviderFor(O, P)) {
+              return fallback2;
+            }
+            return void 0;
+          }
+          function getProvider(O, P) {
+            var providerMap = targetProviderMap.get(O);
+            var provider;
+            if (!IsUndefined(providerMap)) {
+              provider = providerMap.get(P);
+            }
+            if (!IsUndefined(provider)) {
+              return provider;
+            }
+            provider = getProviderNoCache(O, P);
+            if (!IsUndefined(provider)) {
+              if (IsUndefined(providerMap)) {
+                providerMap = new _Map();
+                targetProviderMap.set(O, providerMap);
+              }
+              providerMap.set(P, provider);
+            }
+            return provider;
+          }
+          function hasProvider(provider) {
+            if (IsUndefined(provider))
+              throw new TypeError();
+            return first === provider || second === provider || !IsUndefined(rest) && rest.has(provider);
+          }
+          function setProvider(O, P, provider) {
+            if (!hasProvider(provider)) {
+              throw new Error("Metadata provider not registered.");
+            }
+            var existingProvider = getProvider(O, P);
+            if (existingProvider !== provider) {
+              if (!IsUndefined(existingProvider)) {
+                return false;
+              }
+              var providerMap = targetProviderMap.get(O);
+              if (IsUndefined(providerMap)) {
+                providerMap = new _Map();
+                targetProviderMap.set(O, providerMap);
+              }
+              providerMap.set(P, provider);
+            }
+            return true;
+          }
+        }
+        function GetOrCreateMetadataRegistry() {
+          var metadataRegistry2;
+          if (!IsUndefined(registrySymbol) && IsObject(root.Reflect) && Object.isExtensible(root.Reflect)) {
+            metadataRegistry2 = root.Reflect[registrySymbol];
+          }
+          if (IsUndefined(metadataRegistry2)) {
+            metadataRegistry2 = CreateMetadataRegistry();
+          }
+          if (!IsUndefined(registrySymbol) && IsObject(root.Reflect) && Object.isExtensible(root.Reflect)) {
+            Object.defineProperty(root.Reflect, registrySymbol, {
+              enumerable: false,
+              configurable: false,
+              writable: false,
+              value: metadataRegistry2
+            });
+          }
+          return metadataRegistry2;
+        }
+        function CreateMetadataProvider(registry) {
+          var metadata2 = new _WeakMap();
+          var provider = {
+            isProviderFor: function(O, P) {
+              var targetMetadata = metadata2.get(O);
+              if (IsUndefined(targetMetadata))
+                return false;
+              return targetMetadata.has(P);
+            },
+            OrdinaryDefineOwnMetadata: OrdinaryDefineOwnMetadata2,
+            OrdinaryHasOwnMetadata: OrdinaryHasOwnMetadata2,
+            OrdinaryGetOwnMetadata: OrdinaryGetOwnMetadata2,
+            OrdinaryOwnMetadataKeys: OrdinaryOwnMetadataKeys2,
+            OrdinaryDeleteMetadata
+          };
+          metadataRegistry.registerProvider(provider);
+          return provider;
+          function GetOrCreateMetadataMap(O, P, Create) {
+            var targetMetadata = metadata2.get(O);
+            var createdTargetMetadata = false;
+            if (IsUndefined(targetMetadata)) {
+              if (!Create)
+                return void 0;
+              targetMetadata = new _Map();
+              metadata2.set(O, targetMetadata);
+              createdTargetMetadata = true;
+            }
+            var metadataMap = targetMetadata.get(P);
+            if (IsUndefined(metadataMap)) {
+              if (!Create)
+                return void 0;
+              metadataMap = new _Map();
+              targetMetadata.set(P, metadataMap);
+              if (!registry.setProvider(O, P, provider)) {
+                targetMetadata.delete(P);
+                if (createdTargetMetadata) {
+                  metadata2.delete(O);
+                }
+                throw new Error("Wrong provider for target.");
+              }
+            }
+            return metadataMap;
+          }
+          function OrdinaryHasOwnMetadata2(MetadataKey, O, P) {
+            var metadataMap = GetOrCreateMetadataMap(
+              O,
+              P,
+              /*Create*/
+              false
+            );
+            if (IsUndefined(metadataMap))
+              return false;
+            return ToBoolean(metadataMap.has(MetadataKey));
+          }
+          function OrdinaryGetOwnMetadata2(MetadataKey, O, P) {
+            var metadataMap = GetOrCreateMetadataMap(
+              O,
+              P,
+              /*Create*/
+              false
+            );
+            if (IsUndefined(metadataMap))
+              return void 0;
+            return metadataMap.get(MetadataKey);
+          }
+          function OrdinaryDefineOwnMetadata2(MetadataKey, MetadataValue, O, P) {
+            var metadataMap = GetOrCreateMetadataMap(
+              O,
+              P,
+              /*Create*/
+              true
+            );
+            metadataMap.set(MetadataKey, MetadataValue);
+          }
+          function OrdinaryOwnMetadataKeys2(O, P) {
+            var keys = [];
+            var metadataMap = GetOrCreateMetadataMap(
+              O,
+              P,
+              /*Create*/
+              false
+            );
+            if (IsUndefined(metadataMap))
+              return keys;
+            var keysObj = metadataMap.keys();
+            var iterator2 = GetIterator(keysObj);
+            var k = 0;
+            while (true) {
+              var next = IteratorStep(iterator2);
+              if (!next) {
+                keys.length = k;
+                return keys;
+              }
+              var nextValue = IteratorValue(next);
+              try {
+                keys[k] = nextValue;
+              } catch (e) {
+                try {
+                  IteratorClose(iterator2);
+                } finally {
+                  throw e;
+                }
+              }
+              k++;
+            }
+          }
+          function OrdinaryDeleteMetadata(MetadataKey, O, P) {
+            var metadataMap = GetOrCreateMetadataMap(
+              O,
+              P,
+              /*Create*/
+              false
+            );
+            if (IsUndefined(metadataMap))
+              return false;
+            if (!metadataMap.delete(MetadataKey))
+              return false;
+            if (metadataMap.size === 0) {
+              var targetMetadata = metadata2.get(O);
+              if (!IsUndefined(targetMetadata)) {
+                targetMetadata.delete(P);
+                if (targetMetadata.size === 0) {
+                  metadata2.delete(targetMetadata);
+                }
+              }
+            }
+            return true;
+          }
+        }
+        function CreateFallbackProvider(reflect) {
+          var defineMetadata2 = reflect.defineMetadata, hasOwnMetadata2 = reflect.hasOwnMetadata, getOwnMetadata2 = reflect.getOwnMetadata, getOwnMetadataKeys2 = reflect.getOwnMetadataKeys, deleteMetadata2 = reflect.deleteMetadata;
+          var metadataOwner = new _WeakMap();
+          var provider = {
+            isProviderFor: function(O, P) {
+              var metadataPropertySet = metadataOwner.get(O);
+              if (!IsUndefined(metadataPropertySet)) {
+                return metadataPropertySet.has(P);
+              }
+              if (getOwnMetadataKeys2(O, P).length) {
+                if (IsUndefined(metadataPropertySet)) {
+                  metadataPropertySet = new _Set();
+                  metadataOwner.set(O, metadataPropertySet);
+                }
+                metadataPropertySet.add(P);
+                return true;
+              }
+              return false;
+            },
+            OrdinaryDefineOwnMetadata: defineMetadata2,
+            OrdinaryHasOwnMetadata: hasOwnMetadata2,
+            OrdinaryGetOwnMetadata: getOwnMetadata2,
+            OrdinaryOwnMetadataKeys: getOwnMetadataKeys2,
+            OrdinaryDeleteMetadata: deleteMetadata2
+          };
+          return provider;
+        }
+        function GetMetadataProvider(O, P, Create) {
+          var registeredProvider = metadataRegistry.getProvider(O, P);
+          if (!IsUndefined(registeredProvider)) {
+            return registeredProvider;
+          }
+          if (Create) {
+            if (metadataRegistry.setProvider(O, P, metadataProvider)) {
+              return metadataProvider;
+            }
+            throw new Error("Illegal state.");
+          }
+          return void 0;
         }
         function CreateMapPolyfill() {
           var cacheSentinel = {};
@@ -19266,30 +19539,30 @@ var require_Reflect = __commonJS({
               return MapIterator2;
             }()
           );
-          return (
+          var Map2 = (
             /** @class */
             function() {
-              function Map2() {
+              function Map3() {
                 this._keys = [];
                 this._values = [];
                 this._cacheKey = cacheSentinel;
                 this._cacheIndex = -2;
               }
-              Object.defineProperty(Map2.prototype, "size", {
+              Object.defineProperty(Map3.prototype, "size", {
                 get: function() {
                   return this._keys.length;
                 },
                 enumerable: true,
                 configurable: true
               });
-              Map2.prototype.has = function(key) {
+              Map3.prototype.has = function(key) {
                 return this._find(
                   key,
                   /*insert*/
                   false
                 ) >= 0;
               };
-              Map2.prototype.get = function(key) {
+              Map3.prototype.get = function(key) {
                 var index = this._find(
                   key,
                   /*insert*/
@@ -19297,7 +19570,7 @@ var require_Reflect = __commonJS({
                 );
                 return index >= 0 ? this._values[index] : void 0;
               };
-              Map2.prototype.set = function(key, value) {
+              Map3.prototype.set = function(key, value) {
                 var index = this._find(
                   key,
                   /*insert*/
@@ -19306,7 +19579,7 @@ var require_Reflect = __commonJS({
                 this._values[index] = value;
                 return this;
               };
-              Map2.prototype.delete = function(key) {
+              Map3.prototype.delete = function(key) {
                 var index = this._find(
                   key,
                   /*insert*/
@@ -19320,7 +19593,7 @@ var require_Reflect = __commonJS({
                   }
                   this._keys.length--;
                   this._values.length--;
-                  if (key === this._cacheKey) {
+                  if (SameValueZero(key, this._cacheKey)) {
                     this._cacheKey = cacheSentinel;
                     this._cacheIndex = -2;
                   }
@@ -19328,30 +19601,36 @@ var require_Reflect = __commonJS({
                 }
                 return false;
               };
-              Map2.prototype.clear = function() {
+              Map3.prototype.clear = function() {
                 this._keys.length = 0;
                 this._values.length = 0;
                 this._cacheKey = cacheSentinel;
                 this._cacheIndex = -2;
               };
-              Map2.prototype.keys = function() {
+              Map3.prototype.keys = function() {
                 return new MapIterator(this._keys, this._values, getKey);
               };
-              Map2.prototype.values = function() {
+              Map3.prototype.values = function() {
                 return new MapIterator(this._keys, this._values, getValue);
               };
-              Map2.prototype.entries = function() {
+              Map3.prototype.entries = function() {
                 return new MapIterator(this._keys, this._values, getEntry);
               };
-              Map2.prototype["@@iterator"] = function() {
+              Map3.prototype["@@iterator"] = function() {
                 return this.entries();
               };
-              Map2.prototype[iteratorSymbol] = function() {
+              Map3.prototype[iteratorSymbol] = function() {
                 return this.entries();
               };
-              Map2.prototype._find = function(key, insert) {
-                if (this._cacheKey !== key) {
-                  this._cacheIndex = this._keys.indexOf(this._cacheKey = key);
+              Map3.prototype._find = function(key, insert) {
+                if (!SameValueZero(this._cacheKey, key)) {
+                  this._cacheIndex = -1;
+                  for (var i = 0; i < this._keys.length; i++) {
+                    if (SameValueZero(this._keys[i], key)) {
+                      this._cacheIndex = i;
+                      break;
+                    }
+                  }
                 }
                 if (this._cacheIndex < 0 && insert) {
                   this._cacheIndex = this._keys.length;
@@ -19360,9 +19639,10 @@ var require_Reflect = __commonJS({
                 }
                 return this._cacheIndex;
               };
-              return Map2;
+              return Map3;
             }()
           );
+          return Map2;
           function getKey(key, _) {
             return key;
           }
@@ -19374,49 +19654,50 @@ var require_Reflect = __commonJS({
           }
         }
         function CreateSetPolyfill() {
-          return (
+          var Set2 = (
             /** @class */
             function() {
-              function Set2() {
+              function Set3() {
                 this._map = new _Map();
               }
-              Object.defineProperty(Set2.prototype, "size", {
+              Object.defineProperty(Set3.prototype, "size", {
                 get: function() {
                   return this._map.size;
                 },
                 enumerable: true,
                 configurable: true
               });
-              Set2.prototype.has = function(value) {
+              Set3.prototype.has = function(value) {
                 return this._map.has(value);
               };
-              Set2.prototype.add = function(value) {
+              Set3.prototype.add = function(value) {
                 return this._map.set(value, value), this;
               };
-              Set2.prototype.delete = function(value) {
+              Set3.prototype.delete = function(value) {
                 return this._map.delete(value);
               };
-              Set2.prototype.clear = function() {
+              Set3.prototype.clear = function() {
                 this._map.clear();
               };
-              Set2.prototype.keys = function() {
+              Set3.prototype.keys = function() {
                 return this._map.keys();
               };
-              Set2.prototype.values = function() {
-                return this._map.values();
+              Set3.prototype.values = function() {
+                return this._map.keys();
               };
-              Set2.prototype.entries = function() {
+              Set3.prototype.entries = function() {
                 return this._map.entries();
               };
-              Set2.prototype["@@iterator"] = function() {
+              Set3.prototype["@@iterator"] = function() {
                 return this.keys();
               };
-              Set2.prototype[iteratorSymbol] = function() {
+              Set3.prototype[iteratorSymbol] = function() {
                 return this.keys();
               };
-              return Set2;
+              return Set3;
             }()
           );
+          return Set2;
         }
         function CreateWeakMapPolyfill() {
           var UUID_SIZE = 16;
