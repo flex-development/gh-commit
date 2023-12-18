@@ -24019,7 +24019,7 @@ var require_configurable_module_builder = __commonJS({
             const providers = [
               {
                 provide: self2.options.optionsInjectionToken,
-                useValue: this.omitExtras(options, self2.extras)
+                useFactory: () => this.omitExtras(options, self2.extras)
               }
             ];
             if (self2.options.alwaysTransient) {
@@ -37898,8 +37898,8 @@ var require_unknown_module_exception = __commonJS({
     exports.UnknownModuleException = void 0;
     var runtime_exception_1 = require_runtime_exception();
     var UnknownModuleException = class extends runtime_exception_1.RuntimeException {
-      constructor() {
-        super("Nest could not select the given module (it does not exist in current context)");
+      constructor(moduleName) {
+        super(`Nest could not select the given module (${moduleName ? `"${moduleName}"` : "it"} does not exist in current context).`);
       }
     };
     exports.UnknownModuleException = UnknownModuleException;
@@ -42263,7 +42263,7 @@ var require_nest_application_context = __commonJS({
         const token = moduleTokenFactory.create(type, dynamicMetadata);
         const selectedModule = modulesContainer.get(token);
         if (!selectedModule) {
-          throw new exceptions_1.UnknownModuleException();
+          throw new exceptions_1.UnknownModuleException(type.name);
         }
         return new _NestApplicationContext(this.container, this.appOptions, selectedModule, scope);
       }
@@ -43859,15 +43859,15 @@ var require_internal_core_module_factory = __commonJS({
         return internal_core_module_1.InternalCoreModule.register([
           {
             provide: external_context_creator_1.ExternalContextCreator,
-            useValue: external_context_creator_1.ExternalContextCreator.fromContainer(container)
+            useFactory: () => external_context_creator_1.ExternalContextCreator.fromContainer(container)
           },
           {
             provide: modules_container_1.ModulesContainer,
-            useValue: container.getModules()
+            useFactory: () => container.getModules()
           },
           {
             provide: http_adapter_host_1.HttpAdapterHost,
-            useValue: httpAdapterHost
+            useFactory: () => httpAdapterHost
           },
           {
             provide: lazy_module_loader_1.LazyModuleLoader,
@@ -43875,7 +43875,7 @@ var require_internal_core_module_factory = __commonJS({
           },
           {
             provide: serialized_graph_1.SerializedGraph,
-            useValue: container.serializedGraph
+            useFactory: () => container.serializedGraph
           }
         ]);
       }
@@ -44936,7 +44936,7 @@ var require_repl = __commonJS({
     var repl_context_1 = require_repl_context();
     var repl_logger_1 = require_repl_logger();
     var repl_native_commands_1 = require_repl_native_commands();
-    async function repl(module2) {
+    async function repl(module2, replOptions = {}) {
       const app = await nest_factory_1.NestFactory.createApplicationContext(module2, {
         abortOnError: false,
         logger: new repl_logger_1.ReplLogger()
@@ -44947,7 +44947,8 @@ var require_repl = __commonJS({
       const _repl = await Promise.resolve().then(() => __require("repl"));
       const replServer = _repl.start({
         prompt: cli_colors_util_1.clc.green("> "),
-        ignoreUndefined: true
+        ignoreUndefined: true,
+        ...replOptions
       });
       (0, assign_to_object_util_1.assignToObject)(replServer.context, replContext.globalScope);
       (0, repl_native_commands_1.defineDefaultCommandsOnRepl)(replServer);
