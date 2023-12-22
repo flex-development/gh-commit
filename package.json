@@ -94,7 +94,7 @@
     "@vitest/expect": "1.1.0",
     "chai": "5.0.0-rc.0",
     "cross-env": "7.0.3",
-    "cspell": "8.2.1",
+    "cspell": "8.2.3",
     "dprint": "0.44.0",
     "editorconfig": "2.0.0",
     "esbuild": "0.19.10",
