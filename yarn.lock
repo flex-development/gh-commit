@@ -1393,7 +1393,7 @@ __metadata:
     "@vates/toggle-scripts": "npm:1.0.0"
     "@vitest/coverage-v8": "npm:1.1.0"
     "@vitest/expect": "npm:1.1.0"
-    chai: "npm:5.0.0-rc.0"
+    chai: "npm:5.0.0"
     cross-env: "npm:7.0.3"
     cspell: "npm:8.2.4"
     dprint: "npm:0.45.0"
@@ -3220,16 +3220,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai@npm:5.0.0-rc.0":
-  version: 5.0.0-rc.0
-  resolution: "chai@npm:5.0.0-rc.0"
+"chai@npm:5.0.0":
+  version: 5.0.0
+  resolution: "chai@npm:5.0.0"
   dependencies:
     assertion-error: "npm:^2.0.1"
     check-error: "npm:^2.0.0"
     deep-eql: "npm:^5.0.1"
     loupe: "npm:^3.0.0"
     pathval: "npm:^2.0.0"
-  checksum: b7a829a09b64243410a50e39c5907aba2324c66f71e8f7b3e9945e35854013e5aba991a625b828d285e77b9ad4366f052e87cfe617806020eb788214eee73789
+  checksum: c23d1bb3912cc36d12861d7e4010bb992aabf923a8d393bc71e776218c39f5f40778ab9f398ff962dd26857edee07ce732c9ad28a678feb1b76f99384d2e4a90
   languageName: node
   linkType: hard
 
