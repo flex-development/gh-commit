@@ -126,7 +126,7 @@
     "sh-syntax": "0.4.2",
     "trash-cli": "5.0.0",
     "ts-dedent": "2.2.0",
-    "typescript": "5.2.2",
+    "typescript": "5.3.3",
     "vite": "5.0.10",
     "vite-tsconfig-paths": "4.2.3",
     "vitest": "1.1.1",
