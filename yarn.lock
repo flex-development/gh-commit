@@ -1417,7 +1417,7 @@ __metadata:
     is-ci: "npm:3.0.1"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:15.2.0"
-    msw: "npm:2.0.11"
+    msw: "npm:2.0.13"
     node-notifier: "npm:10.0.1"
     prettier: "npm:3.1.1"
     reflect-metadata: "npm:0.2.1"
@@ -1838,9 +1838,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/interceptors@npm:^0.25.13":
-  version: 0.25.13
-  resolution: "@mswjs/interceptors@npm:0.25.13"
+"@mswjs/interceptors@npm:^0.25.14":
+  version: 0.25.14
+  resolution: "@mswjs/interceptors@npm:0.25.14"
   dependencies:
     "@open-draft/deferred-promise": "npm:^2.2.0"
     "@open-draft/logger": "npm:^0.3.0"
@@ -1848,7 +1848,7 @@ __metadata:
     is-node-process: "npm:^1.2.0"
     outvariant: "npm:^1.2.1"
     strict-event-emitter: "npm:^0.5.1"
-  checksum: 458990b881067798575d93dc9dda26819d9b568992cd5c2eaa96005b9abd078a4b7195d108aee3a30edcee9695d4ec3ab72b0cc15dc579b9bda1c8b9537b5987
+  checksum: 6554d795ab9c88bf56c195b3ce0ec381abbbb66380a65007481044d177c22a2822683befc31d6cf32c02700ed925ff377b58b215ad2e8eaa29d9ea911d4ecd59
   languageName: node
   linkType: hard
 
@@ -7049,15 +7049,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:2.0.11":
-  version: 2.0.11
-  resolution: "msw@npm:2.0.11"
+"msw@npm:2.0.13":
+  version: 2.0.13
+  resolution: "msw@npm:2.0.13"
   dependencies:
     "@bundled-es-modules/cookie": "npm:^2.0.0"
     "@bundled-es-modules/js-levenshtein": "npm:^2.0.1"
     "@bundled-es-modules/statuses": "npm:^1.0.1"
     "@mswjs/cookies": "npm:^1.1.0"
-    "@mswjs/interceptors": "npm:^0.25.13"
+    "@mswjs/interceptors": "npm:^0.25.14"
     "@open-draft/until": "npm:^2.1.0"
     "@types/cookie": "npm:^0.4.1"
     "@types/js-levenshtein": "npm:^1.1.1"
@@ -7075,13 +7075,13 @@ __metadata:
     type-fest: "npm:^2.19.0"
     yargs: "npm:^17.3.1"
   peerDependencies:
-    typescript: ">= 4.7.x <= 5.2.x"
+    typescript: ">= 4.7.x <= 5.3.x"
   peerDependenciesMeta:
     typescript:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 74f87624137ec84016a5662a269fb56dfa17258ec521a76dc0ef87499cffca9d27fcd4772c2dee8038d3a036b01a2a44ad23ee0ec73e1fb7d6a42dbe155c91e2
+  checksum: e039d2595dcda71e568028ddeafec3db3817fe1ccca094a6644840b1e0d24e3b2b3695d263c0e729a553f0ac3dd514d9e24401824322d39b6f19b5048b7c9e13
   languageName: node
   linkType: hard
 
