@@ -110,7 +110,7 @@
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.1.1",
     "eslint-plugin-unicorn": "50.0.1",
-    "eslint-plugin-yml": "1.11.0",
+    "eslint-plugin-yml": "1.12.1",
     "graphql": "16.8.1",
     "graphql-tag": "2.12.6",
     "growl": "1.10.5",
