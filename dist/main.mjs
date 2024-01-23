@@ -71135,7 +71135,7 @@ var init_dist_web4 = __esm({
     init_dist_src3();
     init_dist_web3();
     init_dist_src4();
-    VERSION8 = "5.0.2";
+    VERSION8 = "5.1.0";
     noop2 = () => {
     };
     consoleWarn2 = console.warn.bind(console);
@@ -74854,7 +74854,7 @@ var createTokenAuth = function createTokenAuth2(token) {
 };
 
 // node_modules/@octokit/core/dist-web/index.js
-var VERSION4 = "5.0.2";
+var VERSION4 = "5.1.0";
 var noop = () => {
 };
 var consoleWarn = console.warn.bind(console);
