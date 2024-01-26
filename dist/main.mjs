@@ -20919,6 +20919,11 @@ var require_inject_decorator = __commonJS({
     function Inject(token) {
       return (target, key, index) => {
         const type = token || Reflect.getMetadata("design:type", target, key);
+        if (!type) {
+          throw new Error(`Token is undefined at index: ${index}. This often occurs due to circular dependencies.
+Ensure there are no circular dependencies in your files or barrel files. 
+For more details, refer to https://trilon.io/blog/avoiding-circular-dependencies-in-nestjs.`);
+        }
         if (!(0, shared_utils_1.isUndefined)(index)) {
           let dependencies = Reflect.getMetadata(constants_1.SELF_DECLARED_DEPS_METADATA, target) || [];
           dependencies = [...dependencies, { index, param: type }];
@@ -24019,7 +24024,7 @@ var require_configurable_module_builder = __commonJS({
             const providers = [
               {
                 provide: self2.options.optionsInjectionToken,
-                useFactory: () => this.omitExtras(options, self2.extras)
+                useValue: this.omitExtras(options, self2.extras)
               }
             ];
             if (self2.options.alwaysTransient) {
@@ -42730,7 +42735,7 @@ var require_router_response_controller = __commonJS({
         }
       }
       setHeaders(response, headers) {
-        headers.forEach(({ name, value }) => this.applicationRef.setHeader(response, name, value));
+        headers.forEach(({ name, value }) => this.applicationRef.setHeader(response, name, typeof value === "function" ? value() : value));
       }
       setStatus(response, statusCode) {
         this.applicationRef.status(response, statusCode);
