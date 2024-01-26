@@ -141,15 +141,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bundled-es-modules/js-levenshtein@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@bundled-es-modules/js-levenshtein@npm:2.0.1"
-  dependencies:
-    js-levenshtein: "npm:^1.1.6"
-  checksum: 13d0cbd2b00e563e09a797559dcff8c7e208c1f71e1787535a3d248f7e3d33ef3f0809b9f498d41788ab5fd399882dcca79917d70d97921b7dde94a282c1b7d8
-  languageName: node
-  linkType: hard
-
 "@bundled-es-modules/statuses@npm:^1.0.1":
   version: 1.0.1
   resolution: "@bundled-es-modules/statuses@npm:1.0.1"
@@ -1417,7 +1408,7 @@ __metadata:
     is-ci: "npm:3.0.1"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:15.2.0"
-    msw: "npm:2.1.0"
+    msw: "npm:2.1.5"
     node-notifier: "npm:10.0.1"
     prettier: "npm:3.2.2"
     reflect-metadata: "npm:0.2.1"
@@ -1838,9 +1829,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/interceptors@npm:^0.25.14":
-  version: 0.25.14
-  resolution: "@mswjs/interceptors@npm:0.25.14"
+"@mswjs/interceptors@npm:^0.25.15":
+  version: 0.25.15
+  resolution: "@mswjs/interceptors@npm:0.25.15"
   dependencies:
     "@open-draft/deferred-promise": "npm:^2.2.0"
     "@open-draft/logger": "npm:^0.3.0"
@@ -1848,7 +1839,7 @@ __metadata:
     is-node-process: "npm:^1.2.0"
     outvariant: "npm:^1.2.1"
     strict-event-emitter: "npm:^0.5.1"
-  checksum: 6554d795ab9c88bf56c195b3ce0ec381abbbb66380a65007481044d177c22a2822683befc31d6cf32c02700ed925ff377b58b215ad2e8eaa29d9ea911d4ecd59
+  checksum: 9cdcad91fca0fb30f5c7e8de0ed294bb2c2815e92b8236da8c49faa3605571460d143fa34f80ba62e8594af9b1ab7eb4b3b8207889cec225e9e17c52e8883ae5
   languageName: node
   linkType: hard
 
@@ -2377,13 +2368,6 @@ __metadata:
   version: 2.0.4
   resolution: "@types/istanbul-lib-coverage@npm:2.0.4"
   checksum: a25d7589ee65c94d31464c16b72a9dc81dfa0bea9d3e105ae03882d616e2a0712a9c101a599ec482d297c3591e16336962878cb3eb1a0a62d5b76d277a890ce7
-  languageName: node
-  linkType: hard
-
-"@types/js-levenshtein@npm:^1.1.3":
-  version: 1.1.3
-  resolution: "@types/js-levenshtein@npm:1.1.3"
-  checksum: eb338696da976925ea8448a42d775d7615a14323dceeb08909f187d0b3d3b4c1f67a1c36ef586b1c2318b70ab141bba8fc58311ba1c816711704605aec09db8b
   languageName: node
   linkType: hard
 
@@ -6269,13 +6253,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-levenshtein@npm:^1.1.6":
-  version: 1.1.6
-  resolution: "js-levenshtein@npm:1.1.6"
-  checksum: bb034043fdebab606122fe5b5c0316036f1bb0ea352038af8b0ba4cda4b016303b24f64efb59d9918f66e3680eea97ff421396ff3c153cb00a6f982908f61f8a
-  languageName: node
-  linkType: hard
-
 "js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -7060,18 +7037,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:2.1.0":
-  version: 2.1.0
-  resolution: "msw@npm:2.1.0"
+"msw@npm:2.1.5":
+  version: 2.1.5
+  resolution: "msw@npm:2.1.5"
   dependencies:
     "@bundled-es-modules/cookie": "npm:^2.0.0"
-    "@bundled-es-modules/js-levenshtein": "npm:^2.0.1"
     "@bundled-es-modules/statuses": "npm:^1.0.1"
     "@mswjs/cookies": "npm:^1.1.0"
-    "@mswjs/interceptors": "npm:^0.25.14"
+    "@mswjs/interceptors": "npm:^0.25.15"
     "@open-draft/until": "npm:^2.1.0"
     "@types/cookie": "npm:^0.6.0"
-    "@types/js-levenshtein": "npm:^1.1.3"
     "@types/statuses": "npm:^2.0.4"
     chalk: "npm:^4.1.2"
     chokidar: "npm:^3.4.2"
@@ -7079,7 +7054,6 @@ __metadata:
     headers-polyfill: "npm:^4.0.2"
     inquirer: "npm:^8.2.0"
     is-node-process: "npm:^1.2.0"
-    js-levenshtein: "npm:^1.1.6"
     outvariant: "npm:^1.4.2"
     path-to-regexp: "npm:^6.2.0"
     strict-event-emitter: "npm:^0.5.1"
@@ -7092,7 +7066,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 6c689586dba62fb4ff681e856e6767203dff20338faa385d1a518f542468a581404f224ca65d299667a10b590f79473b72946e537a1ada72a1cf215d18236718
+  checksum: 7c00379217cbf22a3bbf3b513312e2718aa16dd0e8455680bd0f19054c72f64e66adfd9f847faa6996d9b9570b29e3a993b93a17c2b6904225fe7d33dda57340
   languageName: node
   linkType: hard
 
