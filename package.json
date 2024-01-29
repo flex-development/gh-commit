@@ -90,8 +90,8 @@
     "@typescript-eslint/eslint-plugin": "6.19.1",
     "@typescript-eslint/parser": "6.19.1",
     "@vates/toggle-scripts": "1.0.0",
-    "@vitest/coverage-v8": "1.2.1",
-    "@vitest/expect": "1.2.1",
+    "@vitest/coverage-v8": "1.2.2",
+    "@vitest/expect": "1.2.2",
     "chai": "5.0.0",
     "cross-env": "7.0.3",
     "cspell": "8.3.2",
@@ -129,7 +129,7 @@
     "typescript": "5.2.2",
     "vite": "5.0.12",
     "vite-tsconfig-paths": "4.2.3",
-    "vitest": "1.2.1",
+    "vitest": "1.2.2",
     "yaml-eslint-parser": "1.2.2"
   },
   "resolutions": {
