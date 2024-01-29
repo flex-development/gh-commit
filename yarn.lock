@@ -1394,7 +1394,7 @@ __metadata:
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jest-formatting: "npm:3.1.0"
     eslint-plugin-jsdoc: "npm:44.1.0"
-    eslint-plugin-jsonc: "npm:2.11.2"
+    eslint-plugin-jsonc: "npm:2.13.0"
     eslint-plugin-markdown: "npm:3.0.1"
     eslint-plugin-markdownlint: "npm:0.5.0"
     eslint-plugin-node: "npm:11.1.0"
@@ -4475,15 +4475,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-compat-utils@npm:^0.1.2":
-  version: 0.1.2
-  resolution: "eslint-compat-utils@npm:0.1.2"
-  peerDependencies:
-    eslint: ">=6.0.0"
-  checksum: 8c273889485ab863f2b6089c36f042dd2d9bf65d219fa256c1991f9466ea8261f3ab753a017a6d8e93bec84abd568fe3e10216f3fda5b41d05e3dce3b2a5e514
-  languageName: node
-  linkType: hard
-
 "eslint-compat-utils@npm:^0.4.0":
   version: 0.4.1
   resolution: "eslint-compat-utils@npm:0.4.1"
@@ -4609,19 +4600,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsonc@npm:2.11.2":
-  version: 2.11.2
-  resolution: "eslint-plugin-jsonc@npm:2.11.2"
+"eslint-plugin-jsonc@npm:2.13.0":
+  version: 2.13.0
+  resolution: "eslint-plugin-jsonc@npm:2.13.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.2.0"
-    eslint-compat-utils: "npm:^0.1.2"
+    eslint-compat-utils: "npm:^0.4.0"
     espree: "npm:^9.6.1"
     graphemer: "npm:^1.4.0"
     jsonc-eslint-parser: "npm:^2.0.4"
     natural-compare: "npm:^1.4.0"
+    synckit: "npm:^0.6.0"
   peerDependencies:
     eslint: ">=6.0.0"
-  checksum: a7e8ff0e5d5598e89ecbe1e673d7c5ccf51fefc6b6acb6ac88d95017a9d85daa1df3e35e4951ddfc88ac1fc7564932a5d0afd5990831b89f45a7d486ba768212
+  checksum: 32770482d40551de7722ddf3750a1d93ffd39fb8efc821dfb8d7a78ae0fa05c5f96a18b3e2c82beb295bb0411c22c6b6ee17156721c643e237d58f4088854708
   languageName: node
   linkType: hard
 
@@ -8653,6 +8645,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"synckit@npm:^0.6.0":
+  version: 0.6.2
+  resolution: "synckit@npm:0.6.2"
+  dependencies:
+    tslib: "npm:^2.3.1"
+  checksum: 9641f4a4f113b7d6a810c34870947c1f19b7a736b510211c0ea69b05aed530d9aa52cb4942f0988a72514ce9fda61011e913c52fa86c58ebf56901d54c2fe241
+  languageName: node
+  linkType: hard
+
 "tapable@npm:^2.2.0":
   version: 2.2.1
   resolution: "tapable@npm:2.2.1"
@@ -8859,7 +8860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.6.2, tslib@npm:^2.1.0, tslib@npm:^2.6.2":
+"tslib@npm:2.6.2, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.6.2":
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: bd26c22d36736513980091a1e356378e8b662ded04204453d353a7f34a4c21ed0afc59b5f90719d4ba756e581a162ecbf93118dc9c6be5acf70aa309188166ca
