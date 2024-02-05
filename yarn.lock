@@ -1569,7 +1569,7 @@ __metadata:
     is-ci: "npm:3.0.1"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:15.2.0"
-    msw: "npm:2.1.5"
+    msw: "npm:2.1.6"
     node-notifier: "npm:10.0.1"
     prettier: "npm:3.2.2"
     reflect-metadata: "npm:0.2.1"
@@ -7270,9 +7270,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:2.1.5":
-  version: 2.1.5
-  resolution: "msw@npm:2.1.5"
+"msw@npm:2.1.6":
+  version: 2.1.6
+  resolution: "msw@npm:2.1.6"
   dependencies:
     "@bundled-es-modules/cookie": "npm:^2.0.0"
     "@bundled-es-modules/statuses": "npm:^1.0.1"
@@ -7299,7 +7299,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 7c00379217cbf22a3bbf3b513312e2718aa16dd0e8455680bd0f19054c72f64e66adfd9f847faa6996d9b9570b29e3a993b93a17c2b6904225fe7d33dda57340
+  checksum: 5ef4f36fe3921ec7411e1857784d5b9d3b6b9b1cdc3386ffc0d04e65e26aae34e9dafc657137677bf5a75c117e2a713a7d7eb16b3ba00b22a89bc01162e4ae6e
   languageName: node
   linkType: hard
 
