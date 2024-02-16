@@ -120,7 +120,7 @@
     "lint-staged": "15.2.2",
     "msw": "2.1.7",
     "node-notifier": "10.0.1",
-    "prettier": "3.2.2",
+    "prettier": "3.2.5",
     "reflect-metadata": "0.2.1",
     "rxjs": "7.8.1",
     "sh-syntax": "0.4.2",
