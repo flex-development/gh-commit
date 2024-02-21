@@ -97,7 +97,7 @@
     "cspell": "8.3.2",
     "dprint": "0.45.0",
     "editorconfig": "2.0.0",
-    "esbuild": "0.20.0",
+    "esbuild": "0.20.1",
     "eslint": "8.56.0",
     "eslint-import-resolver-typescript": "3.6.1",
     "eslint-plugin-chai-expect": "3.0.0",
