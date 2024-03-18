@@ -21701,14 +21701,15 @@ var require_route_paramtypes_enum = __commonJS({
       RouteParamtypes2[RouteParamtypes2["RESPONSE"] = 1] = "RESPONSE";
       RouteParamtypes2[RouteParamtypes2["NEXT"] = 2] = "NEXT";
       RouteParamtypes2[RouteParamtypes2["BODY"] = 3] = "BODY";
-      RouteParamtypes2[RouteParamtypes2["QUERY"] = 4] = "QUERY";
-      RouteParamtypes2[RouteParamtypes2["PARAM"] = 5] = "PARAM";
-      RouteParamtypes2[RouteParamtypes2["HEADERS"] = 6] = "HEADERS";
-      RouteParamtypes2[RouteParamtypes2["SESSION"] = 7] = "SESSION";
-      RouteParamtypes2[RouteParamtypes2["FILE"] = 8] = "FILE";
-      RouteParamtypes2[RouteParamtypes2["FILES"] = 9] = "FILES";
-      RouteParamtypes2[RouteParamtypes2["HOST"] = 10] = "HOST";
-      RouteParamtypes2[RouteParamtypes2["IP"] = 11] = "IP";
+      RouteParamtypes2[RouteParamtypes2["RAW_BODY"] = 4] = "RAW_BODY";
+      RouteParamtypes2[RouteParamtypes2["QUERY"] = 5] = "QUERY";
+      RouteParamtypes2[RouteParamtypes2["PARAM"] = 6] = "PARAM";
+      RouteParamtypes2[RouteParamtypes2["HEADERS"] = 7] = "HEADERS";
+      RouteParamtypes2[RouteParamtypes2["SESSION"] = 8] = "SESSION";
+      RouteParamtypes2[RouteParamtypes2["FILE"] = 9] = "FILE";
+      RouteParamtypes2[RouteParamtypes2["FILES"] = 10] = "FILES";
+      RouteParamtypes2[RouteParamtypes2["HOST"] = 11] = "HOST";
+      RouteParamtypes2[RouteParamtypes2["IP"] = 12] = "IP";
     })(RouteParamtypes || (exports.RouteParamtypes = RouteParamtypes = {}));
   }
 });
@@ -21718,7 +21719,7 @@ var require_route_params_decorator = __commonJS({
   "node_modules/@nestjs/common/decorators/http/route-params.decorator.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Res = exports.Req = exports.HostParam = exports.Param = exports.Body = exports.Query = exports.Headers = exports.UploadedFiles = exports.UploadedFile = exports.Session = exports.Ip = exports.Next = exports.Response = exports.Request = exports.assignMetadata = void 0;
+    exports.Res = exports.Req = exports.HostParam = exports.Param = exports.RawBody = exports.Body = exports.Query = exports.Headers = exports.UploadedFiles = exports.UploadedFile = exports.Session = exports.Ip = exports.Next = exports.Response = exports.Request = exports.assignMetadata = void 0;
     var constants_1 = require_constants6();
     var route_paramtypes_enum_1 = require_route_paramtypes_enum();
     var shared_utils_1 = require_shared_utils();
@@ -21774,6 +21775,10 @@ var require_route_params_decorator = __commonJS({
       return createPipesRouteParamDecorator(route_paramtypes_enum_1.RouteParamtypes.BODY)(property, ...pipes);
     }
     exports.Body = Body;
+    function RawBody(...pipes) {
+      return createPipesRouteParamDecorator(route_paramtypes_enum_1.RouteParamtypes.RAW_BODY)(void 0, ...pipes);
+    }
+    exports.RawBody = RawBody;
     function Param(property, ...pipes) {
       return createPipesRouteParamDecorator(route_paramtypes_enum_1.RouteParamtypes.PARAM)(property, ...pipes);
     }
@@ -22078,7 +22083,6 @@ var require_http_exception = __commonJS({
        * Instantiate a plain HTTP Exception.
        *
        * @example
-       * throw new HttpException()
        * throw new HttpException('message', HttpStatus.BAD_REQUEST)
        * throw new HttpException('custom message', HttpStatus.BAD_REQUEST, {
        *  cause: new Error('Cause Error'),
@@ -23386,7 +23390,7 @@ ${JSON.stringify(message, (key, value) => typeof value === "bigint" ? value.toSt
         if (!(0, shared_utils_1.isString)(stack) && !(0, shared_utils_1.isUndefined)(stack)) {
           return false;
         }
-        return /^(.)+\n\s+at .+:\d+:\d+$/.test(stack);
+        return /^(.)+\n\s+at .+:\d+:\d+/.test(stack);
       }
       getColorByLogLevel(level) {
         switch (level) {
@@ -41904,7 +41908,10 @@ var require_route_info_path_extractor = __commonJS({
       extractPathsFrom({ path, method, version }) {
         const versionPaths = this.extractVersionPathFrom(version);
         if (this.isAWildcard(path)) {
-          const entries = versionPaths.length > 0 ? versionPaths.map((versionPath) => this.prefixPath + versionPath + (0, shared_utils_1.addLeadingSlash)(path)) : [this.prefixPath + (0, shared_utils_1.addLeadingSlash)(path)];
+          const entries = versionPaths.length > 0 ? versionPaths.map((versionPath) => [
+            this.prefixPath + versionPath + "$",
+            this.prefixPath + versionPath + (0, shared_utils_1.addLeadingSlash)(path)
+          ]).flat() : this.prefixPath ? [this.prefixPath + "$", this.prefixPath + (0, shared_utils_1.addLeadingSlash)(path)] : [(0, shared_utils_1.addLeadingSlash)(path)];
           return Array.isArray(this.excludedGlobalPrefixRoutes) ? [
             ...entries,
             ...this.excludedGlobalPrefixRoutes.map((route) => versionPaths + (0, shared_utils_1.addLeadingSlash)(route.path))
@@ -42357,7 +42364,9 @@ var require_middleware_module = __commonJS({
           }
           return next();
         };
-        paths.forEach((path) => router(path, middlewareFunction));
+        const pathsToApplyMiddleware = [];
+        paths.some((path) => path.match(/^\/?$/)) ? pathsToApplyMiddleware.push("/") : pathsToApplyMiddleware.push(...paths);
+        pathsToApplyMiddleware.forEach((path) => router(path, middlewareFunction));
       }
       getContextId(request3, isTreeDurable) {
         const contextId = context_id_factory_1.ContextIdFactory.getByRequest(request3);
@@ -42972,6 +42981,8 @@ var require_route_params_factory = __commonJS({
             return res;
           case route_paramtypes_enum_1.RouteParamtypes.BODY:
             return data && req.body ? req.body[data] : req.body;
+          case route_paramtypes_enum_1.RouteParamtypes.RAW_BODY:
+            return req.rawBody;
           case route_paramtypes_enum_1.RouteParamtypes.PARAM:
             return data ? req.params[data] : req.params;
           case route_paramtypes_enum_1.RouteParamtypes.HOST:
@@ -43285,7 +43296,7 @@ var require_router_execution_context = __commonJS({
         return value;
       }
       isPipeable(type) {
-        return type === route_paramtypes_enum_1.RouteParamtypes.BODY || type === route_paramtypes_enum_1.RouteParamtypes.QUERY || type === route_paramtypes_enum_1.RouteParamtypes.PARAM || type === route_paramtypes_enum_1.RouteParamtypes.FILE || type === route_paramtypes_enum_1.RouteParamtypes.FILES || (0, shared_utils_1.isString)(type);
+        return type === route_paramtypes_enum_1.RouteParamtypes.BODY || type === route_paramtypes_enum_1.RouteParamtypes.RAW_BODY || type === route_paramtypes_enum_1.RouteParamtypes.QUERY || type === route_paramtypes_enum_1.RouteParamtypes.PARAM || type === route_paramtypes_enum_1.RouteParamtypes.FILE || type === route_paramtypes_enum_1.RouteParamtypes.FILES || (0, shared_utils_1.isString)(type);
       }
       createGuardsFn(guards, instance, callback, contextType) {
         const canActivateFn = async (args) => {
