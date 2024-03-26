@@ -21701,15 +21701,15 @@ var require_route_paramtypes_enum = __commonJS({
       RouteParamtypes2[RouteParamtypes2["RESPONSE"] = 1] = "RESPONSE";
       RouteParamtypes2[RouteParamtypes2["NEXT"] = 2] = "NEXT";
       RouteParamtypes2[RouteParamtypes2["BODY"] = 3] = "BODY";
-      RouteParamtypes2[RouteParamtypes2["RAW_BODY"] = 4] = "RAW_BODY";
-      RouteParamtypes2[RouteParamtypes2["QUERY"] = 5] = "QUERY";
-      RouteParamtypes2[RouteParamtypes2["PARAM"] = 6] = "PARAM";
-      RouteParamtypes2[RouteParamtypes2["HEADERS"] = 7] = "HEADERS";
-      RouteParamtypes2[RouteParamtypes2["SESSION"] = 8] = "SESSION";
-      RouteParamtypes2[RouteParamtypes2["FILE"] = 9] = "FILE";
-      RouteParamtypes2[RouteParamtypes2["FILES"] = 10] = "FILES";
-      RouteParamtypes2[RouteParamtypes2["HOST"] = 11] = "HOST";
-      RouteParamtypes2[RouteParamtypes2["IP"] = 12] = "IP";
+      RouteParamtypes2[RouteParamtypes2["QUERY"] = 4] = "QUERY";
+      RouteParamtypes2[RouteParamtypes2["PARAM"] = 5] = "PARAM";
+      RouteParamtypes2[RouteParamtypes2["HEADERS"] = 6] = "HEADERS";
+      RouteParamtypes2[RouteParamtypes2["SESSION"] = 7] = "SESSION";
+      RouteParamtypes2[RouteParamtypes2["FILE"] = 8] = "FILE";
+      RouteParamtypes2[RouteParamtypes2["FILES"] = 9] = "FILES";
+      RouteParamtypes2[RouteParamtypes2["HOST"] = 10] = "HOST";
+      RouteParamtypes2[RouteParamtypes2["IP"] = 11] = "IP";
+      RouteParamtypes2[RouteParamtypes2["RAW_BODY"] = 12] = "RAW_BODY";
     })(RouteParamtypes || (exports.RouteParamtypes = RouteParamtypes = {}));
   }
 });
@@ -51040,7 +51040,7 @@ var require_package = __commonJS({
   "node_modules/@nestjs/config/node_modules/dotenv/package.json"(exports, module) {
     module.exports = {
       name: "dotenv",
-      version: "16.4.1",
+      version: "16.4.5",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -51064,6 +51064,7 @@ var require_package = __commonJS({
         "lint-readme": "standard-markdown",
         pretest: "npm run lint && npm run dts-check",
         test: "tap tests/*.js --100 -Rspec",
+        "test:coverage": "tap --coverage-report=lcov",
         prerelease: "npm test",
         release: "standard-version"
       },
@@ -51071,7 +51072,7 @@ var require_package = __commonJS({
         type: "git",
         url: "git://github.com/motdotla/dotenv.git"
       },
-      funding: "https://github.com/motdotla/dotenv?sponsor=1",
+      funding: "https://dotenvx.com",
       keywords: [
         "dotenv",
         "env",
@@ -51183,7 +51184,7 @@ var require_main2 = __commonJS({
         uri = new URL(dotenvKey);
       } catch (error2) {
         if (error2.code === "ERR_INVALID_URL") {
-          const err = new Error("INVALID_DOTENV_KEY: Wrong format. Must be in valid uri format like dotenv://:key_1234@dotenv.org/vault/.env.vault?environment=development");
+          const err = new Error("INVALID_DOTENV_KEY: Wrong format. Must be in valid uri format like dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=development");
           err.code = "INVALID_DOTENV_KEY";
           throw err;
         }
@@ -51244,43 +51245,49 @@ var require_main2 = __commonJS({
       return { parsed };
     }
     function configDotenv(options) {
-      let dotenvPath = path.resolve(process.cwd(), ".env");
+      const dotenvPath = path.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       const debug2 = Boolean(options && options.debug);
-      if (options) {
-        if (options.path != null) {
-          let envPath = options.path;
-          if (Array.isArray(envPath)) {
-            for (const filepath of options.path) {
-              if (fs2.existsSync(filepath)) {
-                envPath = filepath;
-                break;
-              }
-            }
-          }
-          dotenvPath = _resolveHome(envPath);
+      if (options && options.encoding) {
+        encoding = options.encoding;
+      } else {
+        if (debug2) {
+          _debug("No encoding is specified. UTF-8 is used by default");
         }
-        if (options.encoding != null) {
-          encoding = options.encoding;
+      }
+      let optionPaths = [dotenvPath];
+      if (options && options.path) {
+        if (!Array.isArray(options.path)) {
+          optionPaths = [_resolveHome(options.path)];
         } else {
-          if (debug2) {
-            _debug("No encoding is specified. UTF-8 is used by default");
+          optionPaths = [];
+          for (const filepath of options.path) {
+            optionPaths.push(_resolveHome(filepath));
           }
         }
       }
-      try {
-        const parsed = DotenvModule.parse(fs2.readFileSync(dotenvPath, { encoding }));
-        let processEnv = process.env;
-        if (options && options.processEnv != null) {
-          processEnv = options.processEnv;
+      let lastError;
+      const parsedAll = {};
+      for (const path2 of optionPaths) {
+        try {
+          const parsed = DotenvModule.parse(fs2.readFileSync(path2, { encoding }));
+          DotenvModule.populate(parsedAll, parsed, options);
+        } catch (e) {
+          if (debug2) {
+            _debug(`Failed to load ${path2} ${e.message}`);
+          }
+          lastError = e;
         }
-        DotenvModule.populate(processEnv, parsed, options);
-        return { parsed };
-      } catch (e) {
-        if (debug2) {
-          _debug(`Failed to load ${dotenvPath} ${e.message}`);
-        }
-        return { error: e };
+      }
+      let processEnv = process.env;
+      if (options && options.processEnv != null) {
+        processEnv = options.processEnv;
+      }
+      DotenvModule.populate(processEnv, parsedAll, options);
+      if (lastError) {
+        return { parsed: parsedAll, error: lastError };
+      } else {
+        return { parsed: parsedAll };
       }
     }
     function config(options) {
@@ -53524,13 +53531,11 @@ var require_conditional_module = __commonJS({
        * @publicApi
        */
       static async registerWhen(module2, condition, options) {
-        let configResolved = false;
         const { timeout = 5e3 } = options ?? {};
-        setTimeout(() => {
-          if (!configResolved) {
-            throw new Error(`Nest was not able to resolve the config variables within ${timeout} milliseconds. Bause of this, the ConditionalModule was not able to determine if ${module2.toString()} should be registered or not`);
-          }
+        const timer = setTimeout(() => {
+          throw new Error(`Nest was not able to resolve the config variables within ${timeout} milliseconds. Bause of this, the ConditionalModule was not able to determine if ${module2.toString()} should be registered or not`);
         }, timeout);
+        timer.unref();
         const returnModule = { module: _ConditionalModule, imports: [], exports: [] };
         if (typeof condition === "string") {
           const key = condition;
@@ -53539,7 +53544,7 @@ var require_conditional_module = __commonJS({
           };
         }
         await config_module_1.ConfigModule.envVariablesLoaded;
-        configResolved = true;
+        clearTimeout(timer);
         const evaluation = condition(process.env);
         if (evaluation) {
           returnModule.imports.push(module2);
