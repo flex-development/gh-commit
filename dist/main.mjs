@@ -37942,12 +37942,12 @@ var require_context_utils = __commonJS({
         return (0, shared_utils_1.isFunction)(factory) ? (...args) => factory(data, contextFactory(args)) : () => null;
       }
       getContextFactory(contextType, instance, callback) {
-        const contextFactory = (args) => {
-          const ctx = new execution_context_host_1.ExecutionContextHost(args, instance && instance.constructor, callback);
+        const type = instance && instance.constructor;
+        return (args) => {
+          const ctx = new execution_context_host_1.ExecutionContextHost(args, type, callback);
           ctx.setType(contextType);
           return ctx;
         };
-        return contextFactory;
       }
     };
     exports.ContextUtils = ContextUtils;
