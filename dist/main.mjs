@@ -21290,11 +21290,6 @@ var require_inject_decorator = __commonJS({
     function Inject(token) {
       return (target, key, index) => {
         const type = token || Reflect.getMetadata("design:type", target, key);
-        if (!type) {
-          throw new Error(`Token is undefined at index: ${index}. This often occurs due to circular dependencies.
-Ensure there are no circular dependencies in your files or barrel files. 
-For more details, refer to https://trilon.io/blog/avoiding-circular-dependencies-in-nestjs.`);
-        }
         if (!(0, shared_utils_1.isUndefined)(index)) {
           let dependencies = Reflect.getMetadata(constants_1.SELF_DECLARED_DEPS_METADATA, target) || [];
           dependencies = [...dependencies, { index, param: type }];
