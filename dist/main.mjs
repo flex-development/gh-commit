@@ -19824,8 +19824,8 @@ var require_Reflect = __commonJS({
           var provider = {
             isProviderFor: function(O, P) {
               var metadataPropertySet = metadataOwner.get(O);
-              if (!IsUndefined(metadataPropertySet)) {
-                return metadataPropertySet.has(P);
+              if (!IsUndefined(metadataPropertySet) && metadataPropertySet.has(P)) {
+                return true;
               }
               if (getOwnMetadataKeys2(O, P).length) {
                 if (IsUndefined(metadataPropertySet)) {
@@ -20142,11 +20142,15 @@ var require_Reflect = __commonJS({
           }
           function GenRandomBytes(size) {
             if (typeof Uint8Array === "function") {
-              if (typeof crypto !== "undefined")
-                return crypto.getRandomValues(new Uint8Array(size));
-              if (typeof msCrypto !== "undefined")
-                return msCrypto.getRandomValues(new Uint8Array(size));
-              return FillRandomBytes(new Uint8Array(size), size);
+              var array = new Uint8Array(size);
+              if (typeof crypto !== "undefined") {
+                crypto.getRandomValues(array);
+              } else if (typeof msCrypto !== "undefined") {
+                msCrypto.getRandomValues(array);
+              } else {
+                FillRandomBytes(array, size);
+              }
+              return array;
             }
             return FillRandomBytes(new Array(size), size);
           }
