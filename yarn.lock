@@ -1425,7 +1425,7 @@ __metadata:
     msw: "npm:2.2.13"
     node-notifier: "npm:10.0.1"
     prettier: "npm:3.2.5"
-    reflect-metadata: "npm:0.2.1"
+    reflect-metadata: "npm:0.2.2"
     rxjs: "npm:7.8.1"
     sh-syntax: "npm:0.4.2"
     trash-cli: "npm:5.0.0"
@@ -7688,10 +7688,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reflect-metadata@npm:0.2.1":
-  version: 0.2.1
-  resolution: "reflect-metadata@npm:0.2.1"
-  checksum: 394b293bd4a538b644ed0e8730c5aeb1e08e78972c915b3d2cf3b302241952cfee8f8bd8a0fdf7d8c7fa78d31d0585489061624692e2577d767abd120cad968c
+"reflect-metadata@npm:0.2.2":
+  version: 0.2.2
+  resolution: "reflect-metadata@npm:0.2.2"
+  checksum: 1c93f9ac790fea1c852fde80c91b2760420069f4862f28e6fae0c00c6937a56508716b0ed2419ab02869dd488d123c4ab92d062ae84e8739ea7417fae10c4745
   languageName: node
   linkType: hard
 
