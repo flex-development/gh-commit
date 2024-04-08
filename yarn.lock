@@ -1380,7 +1380,7 @@ __metadata:
     "@flex-development/tsconfig-utils": "npm:2.0.2"
     "@flex-development/tutils": "npm:6.0.0-alpha.25"
     "@nestjs/common": "npm:10.3.7"
-    "@nestjs/config": "npm:3.2.1"
+    "@nestjs/config": "npm:3.2.2"
     "@nestjs/core": "npm:10.3.7"
     "@nestjs/cqrs": "npm:10.2.7"
     "@nestjs/testing": "npm:10.3.7"
@@ -1938,9 +1938,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/config@npm:3.2.1":
-  version: 3.2.1
-  resolution: "@nestjs/config@npm:3.2.1"
+"@nestjs/config@npm:3.2.2":
+  version: 3.2.2
+  resolution: "@nestjs/config@npm:3.2.2"
   dependencies:
     dotenv: "npm:16.4.5"
     dotenv-expand: "npm:10.0.0"
@@ -1949,7 +1949,7 @@ __metadata:
   peerDependencies:
     "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
     rxjs: ^7.1.0
-  checksum: 08f640bbb8b503afa903529c499df909b32e5aefe6dfa4dcbf3e4e2b0a6622a6076d8c47570b6ce421225e07f61fe569c9c879426c9c5adafa401b95ee68f67f
+  checksum: c7f0cea0f6c73a5168b572510437d6033d27c6abdf686fa600ae42828b668470f1dd6240a3f8897e0f3c779582f4648ce28591369874e2a4bcf1e7b34c88c9b6
   languageName: node
   linkType: hard
 
