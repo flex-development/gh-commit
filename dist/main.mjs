@@ -53701,7 +53701,7 @@ var require_conditional_module = __commonJS({
        * @publicApi
        */
       static async registerWhen(module2, condition, options) {
-        const { timeout = 5e3 } = options ?? {};
+        const { timeout = 5e3, debug: debug2 = true } = options ?? {};
         const timer = setTimeout(() => {
           throw new Error(`Nest was not able to resolve the config variables within ${timeout} milliseconds. Bause of this, the ConditionalModule was not able to determine if ${module2.toString()} should be registered or not`);
         }, timeout);
@@ -53720,7 +53720,9 @@ var require_conditional_module = __commonJS({
           returnModule.imports.push(module2);
           returnModule.exports.push(module2);
         } else {
-          common_1.Logger.debug(`${condition.toString()} evaluated to false. Skipping the registration of ${module2.toString()}`, _ConditionalModule.name);
+          if (debug2) {
+            common_1.Logger.debug(`${condition.toString()} evaluated to false. Skipping the registration of ${module2.toString()}`, _ConditionalModule.name);
+          }
         }
         return returnModule;
       }
