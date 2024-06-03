@@ -21463,8 +21463,12 @@ var require_inject_decorator = __commonJS({
     var constants_1 = require_constants7();
     var shared_utils_1 = require_shared_utils();
     function Inject(token) {
+      const injectCallHasArguments = arguments.length > 0;
       return (target, key, index) => {
-        const type = token || Reflect.getMetadata("design:type", target, key);
+        let type = token || Reflect.getMetadata("design:type", target, key);
+        if (!type && !injectCallHasArguments) {
+          type = Reflect.getMetadata(constants_1.PARAMTYPES_METADATA, target, key)?.[index];
+        }
         if (!(0, shared_utils_1.isUndefined)(index)) {
           let dependencies = Reflect.getMetadata(constants_1.SELF_DECLARED_DEPS_METADATA, target) || [];
           dependencies = [...dependencies, { index, param: type }];
@@ -41672,15 +41676,18 @@ var require_builder = __commonJS({
         return this.excludedRoutes;
       }
       exclude(...routes) {
-        this.excludedRoutes = this.getRoutesFlatList(routes).reduce((excludedRoutes, route) => {
-          for (const routePath of this.routeInfoPathExtractor.extractPathFrom(route)) {
-            excludedRoutes.push({
-              ...route,
-              path: routePath
-            });
-          }
-          return excludedRoutes;
-        }, []);
+        this.excludedRoutes = [
+          ...this.excludedRoutes,
+          ...this.getRoutesFlatList(routes).reduce((excludedRoutes, route) => {
+            for (const routePath of this.routeInfoPathExtractor.extractPathFrom(route)) {
+              excludedRoutes.push({
+                ...route,
+                path: routePath
+              });
+            }
+            return excludedRoutes;
+          }, [])
+        ];
         return this;
       }
       forRoutes(...routes) {
@@ -43243,7 +43250,7 @@ var require_sse_stream = __commonJS({
           this.lastEventId++;
           message.id = this.lastEventId.toString();
         }
-        if (!this.write(message, "utf-8", cb)) {
+        if (!this.write(message, "utf-8")) {
           this.once("drain", cb);
         } else {
           process.nextTick(cb);
@@ -43315,7 +43322,7 @@ var require_router_response_controller = __commonJS({
             return message;
           }
           return { data: message };
-        }), (0, operators_1.debounce)((message) => new Promise((resolve2) => stream.writeMessage(message, () => resolve2()))), (0, operators_1.catchError)((err) => {
+        }), (0, operators_1.concatMap)((message) => new Promise((resolve2) => stream.writeMessage(message, () => resolve2()))), (0, operators_1.catchError)((err) => {
           const data = err instanceof Error ? err.message : err;
           stream.writeMessage({ type: "error", data }, (writeError) => {
             if (writeError) {
@@ -43330,6 +43337,9 @@ var require_router_response_controller = __commonJS({
         });
         request3.on("close", () => {
           subscription.unsubscribe();
+          if (!stream.writableEnded) {
+            stream.end();
+          }
         });
       }
       assertObservable(value) {
@@ -44981,7 +44991,7 @@ var require_nest_factory = __commonJS({
           let result;
           exceptions_zone_1.ExceptionsZone.run(() => {
             result = receiver[prop](...args);
-          }, teardown);
+          }, teardown, this.autoFlushLogs);
           return result;
         };
       }
@@ -53701,7 +53711,7 @@ var require_conditional_module = __commonJS({
        * @publicApi
        */
       static async registerWhen(module2, condition, options) {
-        const { timeout = 5e3 } = options ?? {};
+        const { timeout = 5e3, debug: debug2 = true } = options ?? {};
         const timer = setTimeout(() => {
           throw new Error(`Nest was not able to resolve the config variables within ${timeout} milliseconds. Bause of this, the ConditionalModule was not able to determine if ${module2.toString()} should be registered or not`);
         }, timeout);
@@ -53720,7 +53730,9 @@ var require_conditional_module = __commonJS({
           returnModule.imports.push(module2);
           returnModule.exports.push(module2);
         } else {
-          common_1.Logger.debug(`${condition.toString()} evaluated to false. Skipping the registration of ${module2.toString()}`, _ConditionalModule.name);
+          if (debug2) {
+            common_1.Logger.debug(`${condition.toString()} evaluated to false. Skipping the registration of ${module2.toString()}`, _ConditionalModule.name);
+          }
         }
         return returnModule;
       }
