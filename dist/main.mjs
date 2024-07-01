@@ -18989,16 +18989,24 @@ var require_tslib = __commonJS({
         if (!Symbol.asyncIterator)
           throw new TypeError("Symbol.asyncIterator is not defined.");
         var g = generator.apply(thisArg, _arguments || []), i, q = [];
-        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
+        return i = {}, verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function() {
           return this;
         }, i;
-        function verb(n) {
-          if (g[n])
+        function awaitReturn(f) {
+          return function(v) {
+            return Promise.resolve(v).then(f, reject);
+          };
+        }
+        function verb(n, f) {
+          if (g[n]) {
             i[n] = function(v) {
               return new Promise(function(a, b) {
                 q.push([n, v, a, b]) > 1 || resume(n, v);
               });
             };
+            if (f)
+              i[n] = f(i[n]);
+          }
         }
         function resume(n, v) {
           try {
@@ -19107,7 +19115,7 @@ var require_tslib = __commonJS({
         if (value !== null && value !== void 0) {
           if (typeof value !== "object" && typeof value !== "function")
             throw new TypeError("Object expected.");
-          var dispose;
+          var dispose, inner;
           if (async) {
             if (!Symbol.asyncDispose)
               throw new TypeError("Symbol.asyncDispose is not defined.");
@@ -19117,9 +19125,19 @@ var require_tslib = __commonJS({
             if (!Symbol.dispose)
               throw new TypeError("Symbol.dispose is not defined.");
             dispose = value[Symbol.dispose];
+            if (async)
+              inner = dispose;
           }
           if (typeof dispose !== "function")
             throw new TypeError("Object not disposable.");
+          if (inner)
+            dispose = function() {
+              try {
+                inner.call(this);
+              } catch (e) {
+                return Promise.reject(e);
+              }
+            };
           env.stack.push({ value, dispose, async });
         } else if (async) {
           env.stack.push({ async: true });
@@ -20925,16 +20943,24 @@ var require_tslib2 = __commonJS({
         if (!Symbol.asyncIterator)
           throw new TypeError("Symbol.asyncIterator is not defined.");
         var g = generator.apply(thisArg, _arguments || []), i, q = [];
-        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
+        return i = {}, verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function() {
           return this;
         }, i;
-        function verb(n) {
-          if (g[n])
+        function awaitReturn(f) {
+          return function(v) {
+            return Promise.resolve(v).then(f, reject);
+          };
+        }
+        function verb(n, f) {
+          if (g[n]) {
             i[n] = function(v) {
               return new Promise(function(a, b) {
                 q.push([n, v, a, b]) > 1 || resume(n, v);
               });
             };
+            if (f)
+              i[n] = f(i[n]);
+          }
         }
         function resume(n, v) {
           try {
@@ -21043,7 +21069,7 @@ var require_tslib2 = __commonJS({
         if (value !== null && value !== void 0) {
           if (typeof value !== "object" && typeof value !== "function")
             throw new TypeError("Object expected.");
-          var dispose;
+          var dispose, inner;
           if (async) {
             if (!Symbol.asyncDispose)
               throw new TypeError("Symbol.asyncDispose is not defined.");
@@ -21053,9 +21079,19 @@ var require_tslib2 = __commonJS({
             if (!Symbol.dispose)
               throw new TypeError("Symbol.dispose is not defined.");
             dispose = value[Symbol.dispose];
+            if (async)
+              inner = dispose;
           }
           if (typeof dispose !== "function")
             throw new TypeError("Object not disposable.");
+          if (inner)
+            dispose = function() {
+              try {
+                inner.call(this);
+              } catch (e) {
+                return Promise.reject(e);
+              }
+            };
           env.stack.push({ value, dispose, async });
         } else if (async) {
           env.stack.push({ async: true });
@@ -21463,8 +21499,12 @@ var require_inject_decorator = __commonJS({
     var constants_1 = require_constants7();
     var shared_utils_1 = require_shared_utils();
     function Inject(token) {
+      const injectCallHasArguments = arguments.length > 0;
       return (target, key, index) => {
-        const type = token || Reflect.getMetadata("design:type", target, key);
+        let type = token || Reflect.getMetadata("design:type", target, key);
+        if (!type && !injectCallHasArguments) {
+          type = Reflect.getMetadata(constants_1.PARAMTYPES_METADATA, target, key)?.[index];
+        }
         if (!(0, shared_utils_1.isUndefined)(index)) {
           let dependencies = Reflect.getMetadata(constants_1.SELF_DECLARED_DEPS_METADATA, target) || [];
           dependencies = [...dependencies, { index, param: type }];
@@ -41672,15 +41712,18 @@ var require_builder = __commonJS({
         return this.excludedRoutes;
       }
       exclude(...routes) {
-        this.excludedRoutes = this.getRoutesFlatList(routes).reduce((excludedRoutes, route) => {
-          for (const routePath of this.routeInfoPathExtractor.extractPathFrom(route)) {
-            excludedRoutes.push({
-              ...route,
-              path: routePath
-            });
-          }
-          return excludedRoutes;
-        }, []);
+        this.excludedRoutes = [
+          ...this.excludedRoutes,
+          ...this.getRoutesFlatList(routes).reduce((excludedRoutes, route) => {
+            for (const routePath of this.routeInfoPathExtractor.extractPathFrom(route)) {
+              excludedRoutes.push({
+                ...route,
+                path: routePath
+              });
+            }
+            return excludedRoutes;
+          }, [])
+        ];
         return this;
       }
       forRoutes(...routes) {
@@ -43243,7 +43286,7 @@ var require_sse_stream = __commonJS({
           this.lastEventId++;
           message.id = this.lastEventId.toString();
         }
-        if (!this.write(message, "utf-8", cb)) {
+        if (!this.write(message, "utf-8")) {
           this.once("drain", cb);
         } else {
           process.nextTick(cb);
@@ -43315,7 +43358,7 @@ var require_router_response_controller = __commonJS({
             return message;
           }
           return { data: message };
-        }), (0, operators_1.debounce)((message) => new Promise((resolve2) => stream.writeMessage(message, () => resolve2()))), (0, operators_1.catchError)((err) => {
+        }), (0, operators_1.concatMap)((message) => new Promise((resolve2) => stream.writeMessage(message, () => resolve2()))), (0, operators_1.catchError)((err) => {
           const data = err instanceof Error ? err.message : err;
           stream.writeMessage({ type: "error", data }, (writeError) => {
             if (writeError) {
@@ -43330,6 +43373,9 @@ var require_router_response_controller = __commonJS({
         });
         request3.on("close", () => {
           subscription.unsubscribe();
+          if (!stream.writableEnded) {
+            stream.end();
+          }
         });
       }
       assertObservable(value) {
@@ -44723,7 +44769,8 @@ var require_scanner = __commonJS({
         }
       }
       insertExportedProvider(exportedProvider, token) {
-        this.container.addExportedProvider(exportedProvider, token);
+        const fulfilledProvider = this.isForwardReference(exportedProvider) ? exportedProvider.forwardRef() : exportedProvider;
+        this.container.addExportedProvider(fulfilledProvider, token);
       }
       insertController(controller, token) {
         this.container.addController(controller, token);
@@ -44981,7 +45028,7 @@ var require_nest_factory = __commonJS({
           let result;
           exceptions_zone_1.ExceptionsZone.run(() => {
             result = receiver[prop](...args);
-          }, teardown);
+          }, teardown, this.autoFlushLogs);
           return result;
         };
       }
@@ -48123,16 +48170,24 @@ var require_tslib3 = __commonJS({
         if (!Symbol.asyncIterator)
           throw new TypeError("Symbol.asyncIterator is not defined.");
         var g = generator.apply(thisArg, _arguments || []), i, q = [];
-        return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
+        return i = {}, verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function() {
           return this;
         }, i;
-        function verb(n) {
-          if (g[n])
+        function awaitReturn(f) {
+          return function(v) {
+            return Promise.resolve(v).then(f, reject);
+          };
+        }
+        function verb(n, f) {
+          if (g[n]) {
             i[n] = function(v) {
               return new Promise(function(a, b) {
                 q.push([n, v, a, b]) > 1 || resume(n, v);
               });
             };
+            if (f)
+              i[n] = f(i[n]);
+          }
         }
         function resume(n, v) {
           try {
@@ -48241,7 +48296,7 @@ var require_tslib3 = __commonJS({
         if (value !== null && value !== void 0) {
           if (typeof value !== "object" && typeof value !== "function")
             throw new TypeError("Object expected.");
-          var dispose;
+          var dispose, inner;
           if (async) {
             if (!Symbol.asyncDispose)
               throw new TypeError("Symbol.asyncDispose is not defined.");
@@ -48251,9 +48306,19 @@ var require_tslib3 = __commonJS({
             if (!Symbol.dispose)
               throw new TypeError("Symbol.dispose is not defined.");
             dispose = value[Symbol.dispose];
+            if (async)
+              inner = dispose;
           }
           if (typeof dispose !== "function")
             throw new TypeError("Object not disposable.");
+          if (inner)
+            dispose = function() {
+              try {
+                inner.call(this);
+              } catch (e) {
+                return Promise.reject(e);
+              }
+            };
           env.stack.push({ value, dispose, async });
         } else if (async) {
           env.stack.push({ async: true });
@@ -52871,535 +52936,15 @@ var require_config_host_module = __commonJS({
   }
 });
 
-// node_modules/@nestjs/config/node_modules/uuid/dist/rng.js
-var require_rng3 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/rng.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = rng;
-    var _crypto = _interopRequireDefault(__require("crypto"));
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var rnds8Pool = new Uint8Array(256);
-    var poolPtr = rnds8Pool.length;
-    function rng() {
-      if (poolPtr > rnds8Pool.length - 16) {
-        _crypto.default.randomFillSync(rnds8Pool);
-        poolPtr = 0;
-      }
-      return rnds8Pool.slice(poolPtr, poolPtr += 16);
-    }
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/regex.js
-var require_regex3 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/regex.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/validate.js
-var require_validate3 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/validate.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _regex = _interopRequireDefault(require_regex3());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function validate(uuid) {
-      return typeof uuid === "string" && _regex.default.test(uuid);
-    }
-    var _default = validate;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/stringify.js
-var require_stringify3 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/stringify.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    exports.unsafeStringify = unsafeStringify;
-    var _validate = _interopRequireDefault(require_validate3());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var byteToHex = [];
-    for (let i = 0; i < 256; ++i) {
-      byteToHex.push((i + 256).toString(16).slice(1));
-    }
-    function unsafeStringify(arr, offset = 0) {
-      return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
-    }
-    function stringify(arr, offset = 0) {
-      const uuid = unsafeStringify(arr, offset);
-      if (!(0, _validate.default)(uuid)) {
-        throw TypeError("Stringified UUID is invalid");
-      }
-      return uuid;
-    }
-    var _default = stringify;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/v1.js
-var require_v13 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/v1.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _rng = _interopRequireDefault(require_rng3());
-    var _stringify = require_stringify3();
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var _nodeId;
-    var _clockseq;
-    var _lastMSecs = 0;
-    var _lastNSecs = 0;
-    function v1(options, buf, offset) {
-      let i = buf && offset || 0;
-      const b = buf || new Array(16);
-      options = options || {};
-      let node = options.node || _nodeId;
-      let clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq;
-      if (node == null || clockseq == null) {
-        const seedBytes = options.random || (options.rng || _rng.default)();
-        if (node == null) {
-          node = _nodeId = [seedBytes[0] | 1, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
-        }
-        if (clockseq == null) {
-          clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
-        }
-      }
-      let msecs = options.msecs !== void 0 ? options.msecs : Date.now();
-      let nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs + 1;
-      const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 1e4;
-      if (dt < 0 && options.clockseq === void 0) {
-        clockseq = clockseq + 1 & 16383;
-      }
-      if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === void 0) {
-        nsecs = 0;
-      }
-      if (nsecs >= 1e4) {
-        throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
-      }
-      _lastMSecs = msecs;
-      _lastNSecs = nsecs;
-      _clockseq = clockseq;
-      msecs += 122192928e5;
-      const tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
-      b[i++] = tl >>> 24 & 255;
-      b[i++] = tl >>> 16 & 255;
-      b[i++] = tl >>> 8 & 255;
-      b[i++] = tl & 255;
-      const tmh = msecs / 4294967296 * 1e4 & 268435455;
-      b[i++] = tmh >>> 8 & 255;
-      b[i++] = tmh & 255;
-      b[i++] = tmh >>> 24 & 15 | 16;
-      b[i++] = tmh >>> 16 & 255;
-      b[i++] = clockseq >>> 8 | 128;
-      b[i++] = clockseq & 255;
-      for (let n = 0; n < 6; ++n) {
-        b[i + n] = node[n];
-      }
-      return buf || (0, _stringify.unsafeStringify)(b);
-    }
-    var _default = v1;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/parse.js
-var require_parse4 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/parse.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _validate = _interopRequireDefault(require_validate3());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function parse5(uuid) {
-      if (!(0, _validate.default)(uuid)) {
-        throw TypeError("Invalid UUID");
-      }
-      let v;
-      const arr = new Uint8Array(16);
-      arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
-      arr[1] = v >>> 16 & 255;
-      arr[2] = v >>> 8 & 255;
-      arr[3] = v & 255;
-      arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
-      arr[5] = v & 255;
-      arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
-      arr[7] = v & 255;
-      arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
-      arr[9] = v & 255;
-      arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 1099511627776 & 255;
-      arr[11] = v / 4294967296 & 255;
-      arr[12] = v >>> 24 & 255;
-      arr[13] = v >>> 16 & 255;
-      arr[14] = v >>> 8 & 255;
-      arr[15] = v & 255;
-      return arr;
-    }
-    var _default = parse5;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/v35.js
-var require_v353 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/v35.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.URL = exports.DNS = void 0;
-    exports.default = v35;
-    var _stringify = require_stringify3();
-    var _parse = _interopRequireDefault(require_parse4());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function stringToBytes(str) {
-      str = unescape(encodeURIComponent(str));
-      const bytes = [];
-      for (let i = 0; i < str.length; ++i) {
-        bytes.push(str.charCodeAt(i));
-      }
-      return bytes;
-    }
-    var DNS = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
-    exports.DNS = DNS;
-    var URL2 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
-    exports.URL = URL2;
-    function v35(name, version, hashfunc) {
-      function generateUUID(value, namespace, buf, offset) {
-        var _namespace;
-        if (typeof value === "string") {
-          value = stringToBytes(value);
-        }
-        if (typeof namespace === "string") {
-          namespace = (0, _parse.default)(namespace);
-        }
-        if (((_namespace = namespace) === null || _namespace === void 0 ? void 0 : _namespace.length) !== 16) {
-          throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
-        }
-        let bytes = new Uint8Array(16 + value.length);
-        bytes.set(namespace);
-        bytes.set(value, namespace.length);
-        bytes = hashfunc(bytes);
-        bytes[6] = bytes[6] & 15 | version;
-        bytes[8] = bytes[8] & 63 | 128;
-        if (buf) {
-          offset = offset || 0;
-          for (let i = 0; i < 16; ++i) {
-            buf[offset + i] = bytes[i];
-          }
-          return buf;
-        }
-        return (0, _stringify.unsafeStringify)(bytes);
-      }
-      try {
-        generateUUID.name = name;
-      } catch (err) {
-      }
-      generateUUID.DNS = DNS;
-      generateUUID.URL = URL2;
-      return generateUUID;
-    }
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/md5.js
-var require_md53 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/md5.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _crypto = _interopRequireDefault(__require("crypto"));
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function md5(bytes) {
-      if (Array.isArray(bytes)) {
-        bytes = Buffer.from(bytes);
-      } else if (typeof bytes === "string") {
-        bytes = Buffer.from(bytes, "utf8");
-      }
-      return _crypto.default.createHash("md5").update(bytes).digest();
-    }
-    var _default = md5;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/v3.js
-var require_v33 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/v3.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _v = _interopRequireDefault(require_v353());
-    var _md = _interopRequireDefault(require_md53());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var v3 = (0, _v.default)("v3", 48, _md.default);
-    var _default = v3;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/native.js
-var require_native2 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/native.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _crypto = _interopRequireDefault(__require("crypto"));
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var _default = {
-      randomUUID: _crypto.default.randomUUID
-    };
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/v4.js
-var require_v43 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/v4.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _native = _interopRequireDefault(require_native2());
-    var _rng = _interopRequireDefault(require_rng3());
-    var _stringify = require_stringify3();
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function v4(options, buf, offset) {
-      if (_native.default.randomUUID && !buf && !options) {
-        return _native.default.randomUUID();
-      }
-      options = options || {};
-      const rnds = options.random || (options.rng || _rng.default)();
-      rnds[6] = rnds[6] & 15 | 64;
-      rnds[8] = rnds[8] & 63 | 128;
-      if (buf) {
-        offset = offset || 0;
-        for (let i = 0; i < 16; ++i) {
-          buf[offset + i] = rnds[i];
-        }
-        return buf;
-      }
-      return (0, _stringify.unsafeStringify)(rnds);
-    }
-    var _default = v4;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/sha1.js
-var require_sha13 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/sha1.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _crypto = _interopRequireDefault(__require("crypto"));
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function sha1(bytes) {
-      if (Array.isArray(bytes)) {
-        bytes = Buffer.from(bytes);
-      } else if (typeof bytes === "string") {
-        bytes = Buffer.from(bytes, "utf8");
-      }
-      return _crypto.default.createHash("sha1").update(bytes).digest();
-    }
-    var _default = sha1;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/v5.js
-var require_v53 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/v5.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _v = _interopRequireDefault(require_v353());
-    var _sha = _interopRequireDefault(require_sha13());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    var v5 = (0, _v.default)("v5", 80, _sha.default);
-    var _default = v5;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/nil.js
-var require_nil3 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/nil.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _default = "00000000-0000-0000-0000-000000000000";
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/version.js
-var require_version3 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/version.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = void 0;
-    var _validate = _interopRequireDefault(require_validate3());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-    function version(uuid) {
-      if (!(0, _validate.default)(uuid)) {
-        throw TypeError("Invalid UUID");
-      }
-      return parseInt(uuid.slice(14, 15), 16);
-    }
-    var _default = version;
-    exports.default = _default;
-  }
-});
-
-// node_modules/@nestjs/config/node_modules/uuid/dist/index.js
-var require_dist4 = __commonJS({
-  "node_modules/@nestjs/config/node_modules/uuid/dist/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    Object.defineProperty(exports, "NIL", {
-      enumerable: true,
-      get: function() {
-        return _nil.default;
-      }
-    });
-    Object.defineProperty(exports, "parse", {
-      enumerable: true,
-      get: function() {
-        return _parse.default;
-      }
-    });
-    Object.defineProperty(exports, "stringify", {
-      enumerable: true,
-      get: function() {
-        return _stringify.default;
-      }
-    });
-    Object.defineProperty(exports, "v1", {
-      enumerable: true,
-      get: function() {
-        return _v.default;
-      }
-    });
-    Object.defineProperty(exports, "v3", {
-      enumerable: true,
-      get: function() {
-        return _v2.default;
-      }
-    });
-    Object.defineProperty(exports, "v4", {
-      enumerable: true,
-      get: function() {
-        return _v3.default;
-      }
-    });
-    Object.defineProperty(exports, "v5", {
-      enumerable: true,
-      get: function() {
-        return _v4.default;
-      }
-    });
-    Object.defineProperty(exports, "validate", {
-      enumerable: true,
-      get: function() {
-        return _validate.default;
-      }
-    });
-    Object.defineProperty(exports, "version", {
-      enumerable: true,
-      get: function() {
-        return _version.default;
-      }
-    });
-    var _v = _interopRequireDefault(require_v13());
-    var _v2 = _interopRequireDefault(require_v33());
-    var _v3 = _interopRequireDefault(require_v43());
-    var _v4 = _interopRequireDefault(require_v53());
-    var _nil = _interopRequireDefault(require_nil3());
-    var _version = _interopRequireDefault(require_version3());
-    var _validate = _interopRequireDefault(require_validate3());
-    var _stringify = _interopRequireDefault(require_stringify3());
-    var _parse = _interopRequireDefault(require_parse4());
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-  }
-});
-
 // node_modules/@nestjs/config/dist/utils/get-config-token.util.js
 var require_get_config_token_util = __commonJS({
   "node_modules/@nestjs/config/dist/utils/get-config-token.util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getConfigToken = void 0;
+    exports.getConfigToken = getConfigToken;
     function getConfigToken(token) {
       return `CONFIGURATION(${token})`;
     }
-    exports.getConfigToken = getConfigToken;
   }
 });
 
@@ -53408,17 +52953,16 @@ var require_create_config_factory_util = __commonJS({
   "node_modules/@nestjs/config/dist/utils/create-config-factory.util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.createConfigProvider = void 0;
-    var uuid_1 = require_dist4();
+    exports.createConfigProvider = createConfigProvider;
     var get_config_token_util_1 = require_get_config_token_util();
+    var crypto_1 = __require("crypto");
     function createConfigProvider(factory) {
       return {
-        provide: factory.KEY || (0, get_config_token_util_1.getConfigToken)((0, uuid_1.v4)()),
+        provide: factory.KEY || (0, get_config_token_util_1.getConfigToken)((0, crypto_1.randomUUID)()),
         useFactory: factory,
         inject: []
       };
     }
-    exports.createConfigProvider = createConfigProvider;
   }
 });
 
@@ -53427,12 +52971,11 @@ var require_get_registration_token_util = __commonJS({
   "node_modules/@nestjs/config/dist/utils/get-registration-token.util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getRegistrationToken = void 0;
+    exports.getRegistrationToken = getRegistrationToken;
     var config_constants_1 = require_config_constants();
     function getRegistrationToken(config) {
       return config[config_constants_1.PARTIAL_CONFIGURATION_KEY];
     }
-    exports.getRegistrationToken = getRegistrationToken;
   }
 });
 
@@ -53444,7 +52987,7 @@ var require_merge_configs_util = __commonJS({
       return mod && mod.__esModule ? mod : { "default": mod };
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.mergeConfigObject = void 0;
+    exports.mergeConfigObject = mergeConfigObject;
     var set_1 = __importDefault4(require_set());
     function mergeConfigObject(host, partial, token) {
       if (token) {
@@ -53453,7 +52996,6 @@ var require_merge_configs_util = __commonJS({
       }
       Object.assign(host, partial);
     }
-    exports.mergeConfigObject = mergeConfigObject;
   }
 });
 
@@ -53696,14 +53238,24 @@ var require_conditional_module = __commonJS({
     exports.ConditionalModule = void 0;
     var common_1 = require_common();
     var config_module_1 = require_config_module();
+    var getInstanceName = (instance) => {
+      if (instance?.forwardRef) {
+        return instance.forwardRef()?.name;
+      }
+      if (instance.module) {
+        return instance.module?.name;
+      }
+      return instance.name;
+    };
     var ConditionalModule = class _ConditionalModule {
       /**
        * @publicApi
        */
       static async registerWhen(module2, condition, options) {
-        const { timeout = 5e3 } = options ?? {};
+        const { timeout = 5e3, debug: debug2 = true } = options ?? {};
+        const moduleName = getInstanceName(module2) || module2.toString();
         const timer = setTimeout(() => {
-          throw new Error(`Nest was not able to resolve the config variables within ${timeout} milliseconds. Bause of this, the ConditionalModule was not able to determine if ${module2.toString()} should be registered or not`);
+          throw new Error(`Nest was not able to resolve the config variables within ${timeout} milliseconds. Bause of this, the ConditionalModule was not able to determine if ${moduleName} should be registered or not`);
         }, timeout);
         timer.unref();
         const returnModule = { module: _ConditionalModule, imports: [], exports: [] };
@@ -53720,7 +53272,9 @@ var require_conditional_module = __commonJS({
           returnModule.imports.push(module2);
           returnModule.exports.push(module2);
         } else {
-          common_1.Logger.debug(`${condition.toString()} evaluated to false. Skipping the registration of ${module2.toString()}`, _ConditionalModule.name);
+          if (debug2) {
+            common_1.Logger.debug(`${condition.toString()} evaluated to false. Skipping the registration of ${moduleName}`, _ConditionalModule.name);
+          }
         }
         return returnModule;
       }
@@ -53798,8 +53352,8 @@ var require_register_as_util = __commonJS({
   "node_modules/@nestjs/config/dist/utils/register-as.util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.registerAs = void 0;
-    var __1 = require_dist5();
+    exports.registerAs = registerAs;
+    var __1 = require_dist4();
     var config_constants_1 = require_config_constants();
     var get_config_token_util_1 = require_get_config_token_util();
     function registerAs(token, configFactory) {
@@ -53820,7 +53374,6 @@ var require_register_as_util = __commonJS({
       }));
       return configFactory;
     }
-    exports.registerAs = registerAs;
   }
 });
 
@@ -53910,7 +53463,7 @@ var require_interfaces5 = __commonJS({
 });
 
 // node_modules/@nestjs/config/dist/index.js
-var require_dist5 = __commonJS({
+var require_dist4 = __commonJS({
   "node_modules/@nestjs/config/dist/index.js"(exports) {
     "use strict";
     var __createBinding4 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
@@ -53953,7 +53506,7 @@ var require_config2 = __commonJS({
           exports[p] = m[p];
     }
     exports.__esModule = true;
-    __export2(require_dist5());
+    __export2(require_dist4());
   }
 });
 
@@ -68877,7 +68430,7 @@ var require_util13 = __commonJS({
 });
 
 // node_modules/@actions/github/node_modules/undici/lib/cookies/parse.js
-var require_parse5 = __commonJS({
+var require_parse4 = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/cookies/parse.js"(exports, module) {
     "use strict";
     var { maxNameValuePairSize, maxAttributeValueSize } = require_constants16();
@@ -69020,7 +68573,7 @@ var require_parse5 = __commonJS({
 var require_cookies2 = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/cookies/index.js"(exports, module) {
     "use strict";
-    var { parseSetCookie } = require_parse5();
+    var { parseSetCookie } = require_parse4();
     var { stringify, getHeadersList } = require_util13();
     var { webidl } = require_webidl2();
     var { Headers } = require_headers2();
